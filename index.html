@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>구리센트럴병원 비누제조기 v1.4 | SOAP Maker</title>
+<title>구리센트럴 비누제조기 v23 | SOAP Maker</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
 :root{
@@ -12,18 +12,17 @@
   --s:#60a5fa;--o:#34d399;--a:#f59e0b;--p:#f472b6;
   --cerebras:#00d4aa;--gemini:#4285f4;--groq:#f55036;
   --deepseek:#0066ff;--xai:#1da1f2;--openai:#10a37f;--anthropic:#d97706;
-  --guri:#0ea5e9;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,180,216,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,216,.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
 .wrap{max-width:1400px;margin:0 auto;padding:16px;position:relative;z-index:1}
 .hdr{text-align:center;margin-bottom:20px}
-.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(14,165,233,.12);border:1px solid rgba(14,165,233,.3);border-radius:20px;padding:5px 14px;font-size:11px;color:var(--guri);margin-bottom:10px}
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,180,216,.1);border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:11px;color:var(--accent);margin-bottom:10px}
 .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 h1{font-size:22px;font-weight:700;letter-spacing:-.5px}
-h1 span{color:var(--guri)}
+h1 span{color:var(--accent)}
 .sub{font-size:11px;color:var(--dim);margin-top:3px}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px}
 .card-hdr{padding:10px 14px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer}
@@ -153,14 +152,6 @@ textarea::placeholder{color:var(--dim)}
 .img-modal-bar{display:flex;gap:8px;margin-top:12px}
 .img-modal-btn{padding:8px 18px;border:1px solid rgba(255,255,255,.3);border-radius:6px;background:rgba(255,255,255,.1);color:#fff;font-size:12px;font-weight:600;cursor:pointer;backdrop-filter:blur(4px)}
 .img-modal-btn:hover{background:rgba(255,255,255,.25);border-color:var(--accent)}
-/* 진료과 선택 */
-.dept-select{background:var(--bg);border:1.5px solid var(--accent);border-radius:6px;padding:6px 10px;color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:600;outline:none;cursor:pointer;width:100%}
-.dept-select:focus{border-color:var(--green);box-shadow:0 0 8px rgba(6,214,160,.2)}
-.dept-select option{background:var(--surface);color:var(--text)}
-.meds-btn{padding:6px 12px;background:linear-gradient(135deg,#059669,#10b981);border:none;border-radius:5px;color:#fff;font-size:10px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
-.meds-btn:hover{opacity:.85}
-.custom-style-item{display:flex;gap:4px;align-items:center;padding:3px 6px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;font-size:10px;margin-bottom:3px}
-.custom-style-item input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:3px 6px;color:var(--text);font-size:10px;outline:none;font-family:'Noto Sans KR',sans-serif}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -168,26 +159,24 @@ textarea::placeholder{color:var(--dim)}
 <body>
 <div class="wrap">
 <div class="hdr">
-  <div class="badge"><div class="dot"></div>구리센트럴병원 전용</div>
-  <h1>🏥 구리센트럴병원 <span>비누제조기</span> <span style="font-size:11px;color:var(--dim);font-weight:400">v1.4</span></h1>
-  <p class="sub">음성·텍스트·문서·영상자료 → Multi-AI SOAP 자동 작성 · 의료 이미지 생성 · MRI/CT 분석 반영</p>
-  <div style="margin-top:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
-    <a href="./guide.html" style="display:inline-flex;align-items:center;gap:4px;padding:5px 14px;background:rgba(14,165,233,.12);border:1px solid rgba(14,165,233,.3);border-radius:16px;color:var(--guri);font-size:11px;font-weight:600;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(14,165,233,.25)'" onmouseout="this.style.background='rgba(14,165,233,.12)'">📖 사용 설명서</a>
-    <a href="https://github.com/guricentral/soap" target="_blank" style="display:inline-flex;align-items:center;gap:4px;padding:5px 14px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:16px;color:var(--dim);font-size:11px;font-weight:500;text-decoration:none;transition:all .2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">GitHub</a>
-  </div>
+  <h1>🧼 구리센트럴 <span>비누제조기</span> <span style="font-size:11px;color:var(--dim);font-weight:400">v23</span></h1>
+  <p class="sub">음성·텍스트·문서·영상자료 등 다양한 입력 → Multi-AI SOAP 자동 작성 · 의료 이미지 생성 · MRI/CT 분석 반영</p>
 </div>
 
 <!-- API 키 -->
-<details class="card">
+<details class="card" open>
   <summary class="card-hdr">
     <span class="card-title">🔑 API 키 입력</span>
     <span style="font-size:9px;color:var(--dim)">처음 1회만 입력 · 자동 저장됨</span>
   </summary>
   <div class="card-body">
     <div style="background:rgba(0,180,216,.06);border:1px solid rgba(0,180,216,.15);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:11px;line-height:1.8;color:var(--text)">
-      💡 <b>API 키란?</b> AI 서비스를 사용하기 위한 비밀번호예요. 각자 발급받아 입력하세요.<br>
+      💡 <b>API 키란?</b> AI 서비스를 사용하기 위한 비밀번호예요.<br>
+      각 AI 회사 홈페이지에서 무료/유료 키를 발급받아 아래에 입력하세요.<br>
       <span style="color:var(--green)">✓ 한 번 입력하면 브라우저에 저장되어 매번 입력할 필요 없어요.</span><br>
-      <span style="color:var(--dim)">• 음성인식(녹음): <b>OpenAI 키</b> 또는 <b>Groq 키</b> 필요 · 나머지는 사용할 AI만 입력</span>
+      <span style="color:var(--dim)">• 음성인식(녹음)을 사용하려면 <b>OpenAI 키</b> 또는 <b>Groq 키</b>가 필요합니다.</span><br>
+      <span style="color:var(--dim)">• Groq Whisper는 초고속 무료 음성인식! Groq 키만으로도 녹음 가능.</span><br>
+      <span style="color:var(--dim)">• 나머지는 사용할 AI만 입력하면 됩니다. 전부 입력할 필요 없어요.</span>
     </div>
     <div class="api-wrap" id="apiWrap"></div>
   </div>
@@ -196,87 +185,110 @@ textarea::placeholder{color:var(--dim)}
 <!-- 의사/병원 프로필 -->
 <details class="card" id="profileCard" open>
   <summary class="card-hdr">
-    <span class="card-title">🩺 진료과 · 의사 · 약제 정보</span>
-    <span style="font-size:9px;color:var(--dim)" id="profileSummary">구리센트럴병원 (기본)</span>
+    <span class="card-title">🩺 병원 · 의사 · 약제 정보</span>
+    <span style="font-size:9px;color:var(--dim)" id="profileSummary">구리센트럴병원 · NS (기본)</span>
   </summary>
   <div class="card-body">
-    <div style="background:rgba(14,165,233,.08);border:1px solid rgba(14,165,233,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:11px;line-height:1.8;color:var(--text)">
-      🏥 <b>구리센트럴병원 전용 시스템</b><br>
-      진료과를 선택하면 기본 설정이 자동으로 적용됩니다.<br>
-      <span style="color:var(--green)">✓ 개인 취향에 맞게 수정한 뒤 💾 저장하면 다음부터 자동 적용!</span>
+    <div style="background:rgba(6,214,160,.06);border:1px solid rgba(6,214,160,.15);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:11px;line-height:1.8;color:var(--text)">
+      💡 <b>여기에 입력한 정보가 SOAP 작성에 반영됩니다.</b><br>
+      병원명, 전공, 자주 쓰는 약, 진료 원칙 등을 입력해두면<br>
+      AI가 선생님의 진료 스타일에 맞춰 SOAP을 작성해줘요.<br>
+      <span style="color:var(--green)">✓ 처음 한 번만 설정하면 자동 저장됩니다. 💾 저장 버튼을 눌러주세요.</span>
     </div>
-
-    <!-- 진료과 선택 (핵심!) -->
-    <div style="font-size:10px;font-weight:600;color:var(--guri);margin-bottom:6px">🏷️ 진료과 선택</div>
-    <select class="dept-select" id="pf-dept-select" onchange="onDeptChange(this.value)">
-      <option value="">-- 진료과를 선택하세요 --</option>
-      <option value="신경외과">🧠 신경외과 (Neurosurgery)</option>
-      <option value="정형외과">🦴 정형외과 (Orthopedic Surgery)</option>
-      <option value="일반외과">🔪 일반외과 (General Surgery)</option>
-      <option value="내과">💊 내과 (Internal Medicine)</option>
-      <option value="마취과">😴 마취과 (Anesthesiology)</option>
-      <option value="영상의학과">🩻 영상의학과 (Radiology)</option>
-    </select>
-
     <!-- 기본 정보 -->
-    <div style="font-size:10px;font-weight:600;color:var(--accent);margin:10px 0 4px">👨‍⚕️ 기본 정보</div>
+    <div style="font-size:10px;font-weight:600;color:var(--accent);margin-bottom:4px">👨‍⚕️ 기본 정보</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px">
-      <div class="api-card"><label>🏥 근무지</label><input type="text" class="api-inp" id="pf-hospital" value="구리센트럴병원" readonly style="color:var(--guri);font-weight:600"></div>
-      <div class="api-card"><label>👨‍⚕️ 의사명</label><input type="text" class="api-inp" id="pf-doctor" placeholder="이름 입력"></div>
-      <div class="api-card"><label>🎯 세부 전공</label><input type="text" class="api-inp" id="pf-specialty" placeholder="진료과 선택 시 자동 입력"></div>
-      <div class="api-card"><label>📅 경력 (년)</label><input type="number" class="api-inp" id="pf-years" placeholder="0" min="0" max="60"></div>
-      <div class="api-card"><label>👥 주된 환자군</label><input type="text" class="api-inp" id="pf-patients" placeholder="진료과 선택 시 자동 입력"></div>
+      <div class="api-card"><label>🏥 근무지 (병원명)</label><input type="text" class="api-inp" id="pf-hospital" placeholder="구리센트럴병원" value="구리센트럴병원"></div>
+      <div class="api-card"><label>👨‍⚕️ 소속 의사명</label><input type="text" class="api-inp" id="pf-doctor" placeholder="홍길동"></div>
+      <div class="api-card"><label>🏷️ 진료과</label><input type="text" class="api-inp" id="pf-dept" placeholder="신경외과" value="신경외과"></div>
+      <div class="api-card"><label>🎯 전공 분야</label><input type="text" class="api-inp" id="pf-specialty" placeholder="Spine Surgery, TLIF, MIS 등" value="Spine Surgery"></div>
+      <div class="api-card"><label>📅 경력 (년)</label><input type="number" class="api-inp" id="pf-years" placeholder="20" value="20" min="0" max="60"></div>
+      <div class="api-card"><label>👥 주된 환자군</label><input type="text" class="api-inp" id="pf-patients" placeholder="퇴행성 척추질환, 디스크, 협착증 등"></div>
     </div>
 
     <!-- 진료 철학 -->
-    <div style="font-size:10px;font-weight:600;color:var(--accent);margin:10px 0 4px">🧠 진료 철학 · 수술/진료 원칙</div>
-    <div class="api-card"><label>의사의 진료 철학, 수술 원칙, 선호 방식 등 (Plan 작성에 반영)</label>
-      <textarea class="api-inp" id="pf-philosophy" style="min-height:60px;font-family:'Noto Sans KR',sans-serif;font-size:11px;line-height:1.6;resize:vertical" placeholder="진료과 선택 시 기본 예시가 채워집니다. 자유롭게 수정하세요."></textarea>
+    <div style="font-size:10px;font-weight:600;color:var(--accent);margin:10px 0 4px">🧠 진료 철학 · 수술 원칙</div>
+    <div class="api-card"><label>의사의 진료 철학, 수술 원칙, 선호 술식 등 (Plan 작성에 반영)</label>
+      <textarea class="api-inp" id="pf-philosophy" style="min-height:60px;font-family:'Noto Sans KR',sans-serif;font-size:11px;line-height:1.6;resize:vertical" placeholder="예:
+• 척추수술은 확실한 호전을 기대할 경우에만 수술 결정
+• 내시경보다는 미세현미경 수술에 강점
+• TLIF 선호, 최소침습(MIS) 적극 활용
+• 보존적 치료 3개월 이상 시행 후 수술 고려
+• 고령 환자는 전신마취 리스크 평가 우선"></textarea>
     </div>
 
     <!-- 약제/수가 정보 -->
     <div style="font-size:10px;font-weight:600;color:var(--accent);margin:10px 0 4px">💊 약제 · 수가 · 처방 정보</div>
-    <div class="api-card"><label>자주 쓰는 약제, 비급여 항목, 보험수가 등 (Plan에 반영)</label>
-      <textarea class="api-inp" id="pf-meds" style="min-height:80px;font-family:'Noto Sans KR',sans-serif;font-size:11px;line-height:1.6;resize:vertical" placeholder="진료과 선택 시 기본값 채워짐"></textarea>
+    <div class="api-card"><label>보험 수가, 비급여 항목, 자주 쓰는 약제명/용량 등 (Plan 작성에 반영)</label>
+      <textarea class="api-inp" id="pf-meds" style="min-height:80px;font-family:'Noto Sans KR',sans-serif;font-size:11px;line-height:1.6;resize:vertical" placeholder="예:
+[자주 쓰는 약제]
+• 가바펜틴 300mg tid → 최대 1800mg/day
+• 프레가발린 75mg bid → 최대 300mg/day
+• 트라마돌 37.5mg/아세트아미노펜 325mg 1T bid
+• 데소겐정 (덱사메타손) 0.5mg
+
+[비급여 항목]
+• 프롤로테라피: 5만원/회
+• 도수치료: 5만원/회 (1주 2회, 4주 프로그램)
+• 체외충격파(ESWT): 3만원/회
+
+[보험 수가 참고]
+• 경막외 신경차단술 (보험): 약 5만원
+• MRI L-spine (보험적용 시): 약 15만원"></textarea>
     </div>
+
+    <!-- 파일 업로드 -->
     <div class="api-card" style="margin-top:4px">
       <label>📁 약제/수가 문서 불러오기 (txt, csv, xlsx)</label>
       <div style="display:flex;gap:4px;margin-top:3px;align-items:center">
-        <button class="btn-sm" onclick="document.getElementById('pfFile').click()">📁 파일 선택</button>
+        <button class="btn-sm" onclick="document.getElementById('pfFile').click()" style="font-size:10px">📁 파일 선택</button>
         <input type="file" id="pfFile" accept=".txt,.csv,.xlsx,.xls,.md,.tsv" style="display:none" onchange="handleProfileFile(event)">
-        <span style="font-size:9px;color:var(--dim)" id="pfFileStatus">파일 → 약제란에 추가</span>
+        <span style="font-size:9px;color:var(--dim)" id="pfFileStatus">파일을 선택하면 약제 정보란에 추가됩니다</span>
       </div>
     </div>
 
-    <!-- 구리센트럴 구비약물 (2026년) -->
-    <div style="font-size:10px;font-weight:600;color:var(--accent);margin:10px 0 4px">🏥 구리센트럴병원 구비약물 <span style="font-size:8px;color:var(--dim);font-weight:400">(2026년 약품목록 기준)</span></div>
-    <div class="api-card">
-      <label>병원 구비 약물 목록 — Plan에서 구비약 우선 처방</label>
-      <textarea class="api-inp" id="pf-stockmeds" style="min-height:80px;font-family:'Noto Sans KR',sans-serif;font-size:11px;line-height:1.6;resize:vertical" placeholder="아래 '2026 약품목록 불러오기' 버튼으로 자동 로드 가능"></textarea>
+    <!-- 외래 및 병동 구비약물 -->
+    <div style="font-size:10px;font-weight:600;color:var(--accent);margin:10px 0 4px">🏥 외래 및 병동 구비약물</div>
+    <div class="api-card"><label>현재 병원에 구비된 약물 목록 (처방 가능 약물 — Plan에서 구비약 우선 처방)</label>
+      <textarea class="api-inp" id="pf-stockmeds" style="min-height:80px;font-family:'Noto Sans KR',sans-serif;font-size:11px;line-height:1.6;resize:vertical" placeholder="예:
+[외래 구비약]
+• 타이레놀 500mg (아세트아미노펜)
+• 낙센 500mg (나프록센)
+• 뉴론틴 300mg (가바펜틴)
+• 리리카 75mg/150mg (프레가발린)
+• 트리돌 50mg (트라마돌)
+• 울트라셋 37.5/325mg (트라마돌/아세트아미노펜)
+• 메칠프레드 4mg (메틸프레드니솔론)
+
+[병동 구비약/주사]
+• 케토락 30mg IV/IM
+• 펜토시필린 400mg
+• 마이돌 50mg IM (페티딘)
+• 덱사메타손 5mg IV
+• PCA (펜타닐 기반)
+
+[외용제/물리치료]
+• 케토톱 플라스타
+• 볼타렌 겔
+• 핫팩, ICT, TENS"></textarea>
     </div>
-    <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;align-items:center">
-      <button class="meds-btn" id="loadMedsBtn" onclick="loadGuriMeds()">💊 2026 약품목록 불러오기</button>
-      <span style="font-size:9px;color:var(--dim)" id="medsLoadStatus">meds.json에서 457개 약품 로드</span>
-      <button class="btn-sm" onclick="document.getElementById('pfStockFile').click()">📁 추가 파일</button>
-      <input type="file" id="pfStockFile" accept=".txt,.csv,.xlsx,.xls,.md,.tsv" style="display:none" onchange="handleStockMedFile(event)">
+    <div class="api-card" style="margin-top:4px">
+      <label>📁 구비약물 문서 불러오기 (txt, csv, xlsx)</label>
+      <div style="display:flex;gap:4px;margin-top:3px;align-items:center">
+        <button class="btn-sm" onclick="document.getElementById('pfStockFile').click()" style="font-size:10px">📁 파일 선택</button>
+        <input type="file" id="pfStockFile" accept=".txt,.csv,.xlsx,.xls,.md,.tsv" style="display:none" onchange="handleStockMedFile(event)">
+        <span style="font-size:9px;color:var(--dim)" id="pfStockFileStatus">파일 → 구비약물란에 추가</span>
+      </div>
     </div>
 
     <!-- 특별 지시사항 -->
     <div style="font-size:10px;font-weight:600;color:var(--accent);margin:10px 0 4px">📝 특별 지시사항</div>
     <div class="api-card"><label>SOAP 작성 시 AI에게 전달할 추가 지시</label>
-      <textarea class="api-inp" id="pf-instruction" style="min-height:50px;font-family:'Noto Sans KR',sans-serif;font-size:11px;line-height:1.5;resize:vertical" placeholder="예: 약물은 용량까지 포함, ICD코드 병기, 비급여 시 예상 비용 안내 등"></textarea>
-    </div>
-
-    <!-- 개인 커스텀 스타일 항목 -->
-    <div style="font-size:10px;font-weight:600;color:var(--accent);margin:10px 0 4px">✨ 개인 커스텀 SOAP 스타일</div>
-    <div class="api-card">
-      <label>나만의 SOAP 작성 규칙을 추가하세요 (각 항목이 AI에게 전달됩니다)</label>
-      <div id="customStyles"></div>
-      <button class="btn-sm" onclick="addCustomStyle()" style="margin-top:4px">➕ 규칙 추가</button>
+      <textarea class="api-inp" id="pf-instruction" style="min-height:50px;font-family:'Noto Sans KR',sans-serif;font-size:11px;line-height:1.5;resize:vertical" placeholder="예: 수술 환자는 반드시 수술명 기재, 약물은 용량까지 포함, ICD코드 병기, Plan에 비급여 항목 포함 시 예상 비용 안내 등"></textarea>
     </div>
 
     <div style="display:flex;gap:4px;margin-top:8px">
-      <button class="btn-sm" onclick="saveProfile()" style="background:linear-gradient(135deg,#0077b6,var(--accent));color:#fff;border:none;font-weight:700;padding:6px 14px">💾 전체 저장</button>
+      <button class="btn-sm" onclick="saveProfile()">💾 전체 저장</button>
       <button class="btn-sm" onclick="resetProfile()">🔄 초기화</button>
       <span style="font-size:9px;color:var(--dim);margin-left:auto;align-self:center">브라우저에 저장 · 한 번만 설정하면 됨</span>
     </div>
@@ -290,7 +302,7 @@ textarea::placeholder{color:var(--dim)}
 <div class="card">
   <div class="card-hdr"><span class="card-title">🤖 SOAP 작성 AI 선택</span><span class="btn-sm" onclick="loadExample()">예시</span></div>
   <div class="card-body">
-    <div style="font-size:10px;color:var(--dim);margin-bottom:6px;line-height:1.6">사용할 AI를 체크하세요. 여러 개 선택 = 동시 비교!<br>★Best = 최고성능 · 🔥Hot = 인기 · ⚡Fast = 빠른응답</div>
+    <div style="font-size:10px;color:var(--dim);margin-bottom:6px;line-height:1.6">사용할 AI를 체크하세요. 여러 개 선택하면 동시에 SOAP을 작성해서 비교할 수 있어요.<br>★Best = 최고성능 · 🔥Hot = 인기 · ⚡Fast = 빠른응답</div>
     <div class="sel-bar"><span style="color:var(--dim)">선택된 모델</span><span class="sel-cnt" id="selCnt">0</span></div>
     <div class="qsel">
       <button class="qbtn" onclick="selAll()">전체</button>
@@ -299,44 +311,49 @@ textarea::placeholder{color:var(--dim)}
       <button class="qbtn" onclick="selFast()">⚡Fast</button>
     </div>
     <div id="modelList"></div>
-    <!-- Custom AI -->
+    <!-- Custom AI 모델 -->
     <div style="margin-top:8px;padding:6px 8px;background:var(--surface2);border-radius:5px;border:1px solid var(--border)">
-      <div style="font-size:10px;font-weight:600;color:var(--accent);margin-bottom:4px">🔧 Custom AI 모델 추가</div>
+      <div style="font-size:10px;font-weight:600;color:var(--accent);margin-bottom:4px">🔧 Custom AI 모델 직접 추가</div>
       <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
         <select class="api-inp" id="customProvider" style="width:90px;font-size:9px;padding:4px">
-          <option value="openai">OpenAI</option><option value="anthropic">Claude</option>
-          <option value="gemini">Gemini</option><option value="groq">Groq</option>
-          <option value="xai">xAI</option><option value="deepseek">DeepSeek</option>
+          <option value="openai">OpenAI</option>
+          <option value="anthropic">Claude</option>
+          <option value="gemini">Gemini</option>
+          <option value="groq">Groq</option>
+          <option value="xai">xAI</option>
+          <option value="deepseek">DeepSeek</option>
           <option value="cerebras">Cerebras</option>
         </select>
-        <input type="text" class="api-inp" id="customModelId" placeholder="모델 ID" style="flex:1;font-size:9px;min-width:100px">
-        <button class="btn-sm" onclick="addCustomModel()" style="font-size:9px">➕</button>
+        <input type="text" class="api-inp" id="customModelId" placeholder="모델 ID (예: gpt-4o)" style="flex:1;font-size:9px;min-width:100px">
+        <button class="btn-sm" onclick="addCustomModel()" style="font-size:9px;white-space:nowrap">➕ 추가</button>
       </div>
       <div id="customModels" style="display:flex;flex-wrap:wrap;gap:3px;margin-top:4px"></div>
     </div>
   </div>
 </div>
 
-<!-- 이미지 모델 -->
+<!-- 이미지 모델 선택 -->
 <div class="card">
-  <div class="card-hdr"><span class="card-title">🖼️ 의료 이미지 생성</span></div>
+  <div class="card-hdr"><span class="card-title">🖼️ 의료 이미지 생성 엔진</span></div>
   <div class="card-body">
-    <div style="font-size:10px;color:var(--dim);margin-bottom:4px;line-height:1.5">SOAP 완료 후 진단명 기반 의료 교육 이미지 자동 생성</div>
-    <div style="font-size:9px;font-weight:600;color:var(--gemini);margin:4px 0 2px">💎 Gemini</div>
+    <div style="font-size:10px;color:var(--dim);margin-bottom:4px;line-height:1.5">SOAP 작성 완료 후, 진단명에 맞는 의료 교육용 이미지를 자동 생성합니다.<br>원하는 엔진을 선택하세요. Gemini 3종 + OpenAI 2종 + Grok + NovelAI = 7개!</div>
+    <div style="font-size:9px;font-weight:600;color:var(--gemini);margin:4px 0 2px">💎 Gemini 이미지 (Nano Banana 시리즈)</div>
     <div class="img-model-grid">
-      <label class="detail-opt sel"><input type="checkbox" name="imgEng" value="nanobana" checked> 🍌 NanoBanana OG</label>
-      <label class="detail-opt sel"><input type="checkbox" name="imgEng" value="nanobana2" checked> 🍌 NanoBanana2 (4K)</label>
-      <label class="detail-opt sel"><input type="checkbox" name="imgEng" value="nanobanapro" checked> 👑 NanoBanana Pro</label>
+      <label class="detail-opt sel"><input type="checkbox" name="imgEng" value="nanobana" checked> 🍌 NanoBanana (OG)</label>
+      <label class="detail-opt"><input type="checkbox" name="imgEng" value="nanobana2"> 🍌2 NanoBanana2 (4K)</label>
+      <label class="detail-opt"><input type="checkbox" name="imgEng" value="nanobanapro"> 🍌👑 NanoBanana Pro</label>
     </div>
-    <div style="font-size:9px;font-weight:600;color:var(--openai);margin:6px 0 2px">🤖 OpenAI</div>
+    <div style="font-size:9px;font-weight:600;color:var(--openai);margin:6px 0 2px">🤖 OpenAI 이미지</div>
     <div class="img-model-grid">
-      <label class="detail-opt sel"><input type="checkbox" name="imgEng" value="gpt" checked> 🤖 GPT Image</label>
+      <label class="detail-opt sel"><input type="checkbox" name="imgEng" value="gpt" checked> 🤖 GPT Image 1</label>
       <label class="detail-opt"><input type="checkbox" name="imgEng" value="dalle3"> 🎨 DALL-E 3</label>
     </div>
-    <div style="font-size:9px;font-weight:600;color:var(--dim);margin:6px 0 2px">기타</div>
+    <div style="font-size:9px;font-weight:600;color:var(--dim);margin:6px 0 2px">기타 엔진</div>
     <div class="img-model-grid">
-      <label class="detail-opt"><input type="checkbox" name="imgEng" value="grok"> ⚡ Grok Image</label>
+      <label class="detail-opt"><input type="checkbox" name="imgEng" value="grok"> ⚡ Grok</label>
+      <label class="detail-opt"><input type="checkbox" name="imgEng" value="nai"> 🎨 NovelAI</label>
     </div>
+    <div style="font-size:9px;color:var(--dim);margin-top:4px">기본: NanoBanana(OG) + GPT Image · 🍌OG=$0.039 · 🍌2=$0.045~0.15 · 🍌Pro=$0.134 · DALL-E 3=무료티어있음</div>
   </div>
 </div>
 
@@ -345,14 +362,14 @@ textarea::placeholder{color:var(--dim)}
   <div class="card-hdr"><span class="card-title">✏️ 진료 내용 입력</span><span style="font-size:9px;color:rgba(255,255,255,.7)">가장 중요한 단계!</span></div>
   <div class="card-body">
     <div style="background:rgba(0,180,216,.08);border:1px solid rgba(0,180,216,.2);border-radius:6px;padding:8px 10px;margin-bottom:8px;font-size:11px;line-height:1.7;color:var(--text)">
-      💡 <b>환자와 대화한 내용</b>을 입력하면 AI가 SOAP 노트로 변환합니다.<br>
-      <span style="color:var(--green)">✓ 타이핑, 붙여넣기, 마이크 녹음, 파일 업로드 중 편한 방법을 선택!</span>
+      💡 <b>환자와 대화한 내용</b>을 아래에 입력하면 AI가 SOAP 노트로 변환합니다.<br>
+      <span style="color:var(--green)">✓ 타이핑, 붙여넣기, 마이크 녹음, 파일 업로드 — 편한 방법을 선택하세요.</span>
     </div>
     <div class="input-tabs">
-      <button class="input-tab active" onclick="switchInput('text')">📋 타이핑</button>
-      <button class="input-tab" onclick="switchInput('rec')">🎙 녹음</button>
+      <button class="input-tab active" onclick="switchInput('text')">📋 타이핑/붙여넣기</button>
+      <button class="input-tab" onclick="switchInput('rec')">🎙 마이크 녹음</button>
       <button class="input-tab" onclick="switchInput('file')">🎵 음성파일</button>
-      <button class="input-tab" onclick="switchInput('doc')">📄 문서</button>
+      <button class="input-tab" onclick="switchInput('doc')">📄 문서파일</button>
     </div>
     <div class="input-pane active" id="pane-text">
       <div style="display:flex;gap:3px;margin-bottom:4px;flex-wrap:wrap">
@@ -365,60 +382,23 @@ textarea::placeholder{color:var(--dim)}
         <label class="detail-opt"><input type="radio" name="langMode" value="bilingual"> 🔄한영병기</label>
       </div>
       <textarea id="inputTxt" placeholder="진료 내용을 여기에 입력하세요 ✍️
+⚠️ 환자의 성명, 주민번호, 연락처 등 개인 식별정보를 입력하지 마세요.
 
-예시: 50대 남자 허리아프고 오른쪽 다리 저림 3주째. VAS 7점.
-SLR 양성. MRI 안 찍었고 고혈압약 복용 중.
+예시: 50대 남자 허리아프고 오른쪽 다리 저림 3주째. VAS 7점. 
+SLR 양성. MRI 안 찍었고 고혈압약 복용 중. 
+MRI 찍고 가바펜틴 시작하려고 함.
 
 💡 클로바노트 녹취록도 그대로 붙여넣기 가능!
 🚀 Ctrl+Enter = 바로 SOAP 변환"></textarea>
     </div>
     <div class="input-pane" id="pane-rec">
       <div style="font-size:9px;color:var(--dim);text-align:center;margin-bottom:2px">HTTPS 환경 필요 (GitHub Pages) · <span id="recMimeInfo"></span></div>
-      <!-- 준비물 안내 (접이식) -->
-      <details style="background:rgba(6,214,160,.06);border:1px solid rgba(6,214,160,.15);border-radius:6px;margin-bottom:8px;font-size:11px">
-        <summary style="padding:8px 10px;cursor:pointer;color:var(--green);font-weight:600;font-size:11px">📋 녹음 준비물 & 권장 마이크 안내 (클릭하여 펼치기)</summary>
-        <div style="padding:8px 12px;line-height:1.9;color:var(--text)">
-          <div style="font-weight:600;color:var(--accent);margin-bottom:4px">✅ 필수 준비물</div>
-          <span style="color:var(--dim)">1.</span> <b>API 키</b> — OpenAI 또는 Groq 키 (음성인식용)<br>
-          <span style="color:var(--dim)">2.</span> <b>HTTPS 환경</b> — GitHub Pages에서 실행하면 자동 해결<br>
-          <span style="color:var(--dim)">3.</span> <b>외장 마이크</b> — 노트북 내장 마이크로도 되지만, 진료실 환경에서는 전용 마이크 강력 추천!<br>
-          <div style="font-weight:600;color:var(--accent);margin:8px 0 4px">🎤 진료실 추천 마이크</div>
-          <div style="background:rgba(14,165,233,.08);border:1px solid rgba(14,165,233,.2);border-radius:5px;padding:8px 10px;margin-bottom:6px">
-            <div style="font-weight:700;color:var(--guri);font-size:12px">🥇 Jabra Speak2 55 UC — 강력 추천!</div>
-            <div style="font-size:10px;color:var(--dim);margin-top:3px">약 25만원 · USB-A/C + Bluetooth 5.1 · 360° 전방향 4마이크 · IP54 방수</div>
-            <div style="font-size:10px;margin-top:2px">• 의사+환자 동시 녹음에 최적 (360° 전방향 수음)<br>• 빔포밍 노이즈캔슬링 → 에어컨, 키보드 소리 자동 제거<br>• 14cm×14cm, 280g — 진료실에 상시 비치하거나 휴대 가능<br>• USB 꽂으면 바로 인식, 드라이버 설치 불필요<br>• <b style="color:var(--green)">현재 구리센트럴 신경외과에서 실사용 중!</b></div>
-          </div>
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:6px 10px;margin-bottom:4px">
-            <div style="font-weight:600;font-size:11px">🥈 Jabra Speak2 75 — 큰 진료실/회의실용</div>
-            <div style="font-size:10px;color:var(--dim)">약 40만원 · 65mm 대형 스피커 · 32시간 배터리 · 2대 연결로 대형 공간 커버</div>
-            <div style="font-size:10px">Speak2 55보다 큰 공간(6인 이상)에 적합. 음질도 한 단계 위.</div>
-          </div>
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:6px 10px;margin-bottom:4px">
-            <div style="font-weight:600;font-size:11px">🥉 Anker PowerConf — 가성비 대안</div>
-            <div style="font-size:10px;color:var(--dim)">약 10만원 · USB-C + BT · 360° 6마이크 · 24시간 배터리</div>
-            <div style="font-size:10px">Jabra보다 저렴하면서 충분한 성능. 6700mAh 배터리로 충전기 역할도. Zoom 인증.</div>
-          </div>
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:6px 10px;margin-bottom:4px">
-            <div style="font-weight:600;font-size:11px">💰 EMEET Luna Plus — 초가성비</div>
-            <div style="font-size:10px;color:var(--dim)">약 7~8만원 · USB + BT · VoiceIA 노이즈캔슬링</div>
-            <div style="font-size:10px">가격 대비 성능 우수. 일단 써보고 싶은 분께 추천.</div>
-          </div>
-          <div style="font-size:10px;color:var(--dim);margin-top:6px;line-height:1.6">
-            💡 <b>TIP:</b> 진료실 녹음은 <b>360° 전방향 스피커폰</b>이 핵심입니다.<br>
-            일반 마이크(단일지향성)는 의사 목소리만 잡고 환자 소리를 놓칩니다.<br>
-            책상 위에 놓기만 하면 양쪽 대화를 모두 녹음하는 스피커폰이 최적!<br>
-            ⚠️ 환자 녹음 시 사전 동의(구두 또는 서면)를 받는 것을 권장합니다.
-          </div>
-        </div>
-      </details>
       <div style="display:flex;align-items:center;gap:4px;justify-content:center;margin-bottom:6px">
-        <span style="font-size:10px;color:var(--dim)">🎤 STT:</span>
+        <span style="font-size:10px;color:var(--dim)">🎤 STT 엔진:</span>
         <select class="api-inp" id="sttEngine" style="width:auto;font-size:10px;padding:4px 8px">
-          <option value="groq-turbo" selected>🚀 Groq Turbo (초고속·최저가) ⭐추천</option>
-          <option value="groq-v3">🚀 Groq V3 (고정밀)</option>
-          <option value="openai">🤖 OpenAI Whisper</option>
-          <option value="openai-mini">💰 GPT-4o Mini Transcribe (절반가격)</option>
-          <option value="openai-4o">🧠 GPT-4o Transcribe (화자분리)</option>
+          <option value="openai" selected>🤖 OpenAI Whisper (기본)</option>
+          <option value="groq-turbo">🚀 Groq Whisper Turbo (초고속)</option>
+          <option value="groq-v3">🚀 Groq Whisper V3 (고정밀)</option>
         </select>
       </div>
       <div class="rec-zone">
@@ -433,20 +413,18 @@ SLR 양성. MRI 안 찍었고 고혈압약 복용 중.
     </div>
     <div class="input-pane" id="pane-file">
       <div style="display:flex;align-items:center;gap:4px;justify-content:center;margin-bottom:6px">
-        <span style="font-size:10px;color:var(--dim)">🎤 STT:</span>
+        <span style="font-size:10px;color:var(--dim)">🎤 STT 엔진:</span>
         <select class="api-inp" id="sttEngine2" style="width:auto;font-size:10px;padding:4px 8px">
-          <option value="groq-turbo" selected>🚀 Groq Turbo (초고속) ⭐추천</option>
-          <option value="groq-v3">🚀 Groq V3 (고정밀)</option>
-          <option value="openai">🤖 OpenAI Whisper</option>
-          <option value="openai-mini">💰 GPT-4o Mini Transcribe</option>
-          <option value="openai-4o">🧠 GPT-4o Transcribe (화자분리)</option>
+          <option value="openai" selected>🤖 OpenAI Whisper (기본)</option>
+          <option value="groq-turbo">🚀 Groq Whisper Turbo (초고속)</option>
+          <option value="groq-v3">🚀 Groq Whisper V3 (고정밀)</option>
         </select>
       </div>
       <div class="upload-box" id="uploadBox" onclick="document.getElementById('audioFile').click()">
         <input type="file" id="audioFile" accept="audio/*,video/*,.m4a,.mp3,.wav,.webm,.mp4,.ogg,.flac" style="display:none" onchange="handleFileUpload(event)">
         <div style="font-size:1.1rem">📁</div>
         <div style="font-size:11px;font-weight:500;margin-top:3px" id="uploadText">녹음 파일 선택</div>
-        <div style="font-size:9px;color:var(--dim);margin-top:2px">m4a, mp3, wav, webm (25MB)</div>
+        <div style="font-size:9px;color:var(--dim);margin-top:2px">m4a, mp3, wav, webm 등 (25MB)</div>
       </div>
       <div class="stt-pipeline" id="sttPipe2">
         <div class="stt-step" id="stt2a"><div class="stt-dot"></div>음성인식 중...</div>
@@ -454,25 +432,27 @@ SLR 양성. MRI 안 찍었고 고혈압약 복용 중.
       </div>
     </div>
     <div class="input-pane" id="pane-doc">
-      <div class="upload-box" onclick="document.getElementById('docFile').click()">
+      <div style="font-size:9px;color:var(--dim);margin-bottom:4px">텍스트 파일(.txt, .md 등)을 올리면 자동으로 입력란에 채워집니다</div>
+      <div class="upload-box" id="docUploadBox" onclick="document.getElementById('docFile').click()">
         <input type="file" id="docFile" accept=".txt,.md,.text,.csv,.log,.rtf" style="display:none" onchange="handleDocUpload(event)">
         <div style="font-size:1.1rem">📄</div>
         <div style="font-size:11px;font-weight:500;margin-top:3px" id="docUploadText">텍스트 문서 선택</div>
-        <div style="font-size:9px;color:var(--dim);margin-top:2px">txt, md 등</div>
+        <div style="font-size:9px;color:var(--dim);margin-top:2px">txt, md 등 텍스트 파일</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MRI/CT -->
+<!-- MRI/CT 이미지 첨부 -->
 <div class="card">
-  <div class="card-hdr"><span class="card-title">🩻 MRI / CT 이미지 첨부</span><span style="font-size:9px;color:var(--dim)" id="imgAttachCount">선택사항</span></div>
+  <div class="card-hdr"><span class="card-title">🩻 선택: MRI / CT 이미지 첨부</span><span style="font-size:9px;color:var(--dim)" id="imgAttachCount">미첨부</span></div>
   <div class="card-body">
-    <div style="font-size:10px;color:var(--dim);margin-bottom:4px;line-height:1.6">환자 MRI/CT 사진 업로드 → AI가 영상분석하여 Assessment에 반영</div>
+    <div style="font-size:10px;color:var(--dim);margin-bottom:4px;line-height:1.6">환자의 MRI/CT 사진이 있으면 여기에 올려주세요 (선택사항).<br>AI가 영상을 분석하여 Assessment(평가)에 소견을 반영합니다.</div>
     <div class="upload-box" id="imgAttachBox" onclick="document.getElementById('medImg').click()" style="padding:10px">
       <input type="file" id="medImg" accept="image/*,.png,.jpg,.jpeg,.webp,.gif,.bmp,.dicom" style="display:none" multiple onchange="handleMedImgUpload(event)">
       <div style="font-size:1.1rem">🩻</div>
       <div style="font-size:11px;font-weight:500;margin-top:3px">MRI / CT 이미지 선택</div>
+      <div style="font-size:9px;color:var(--dim);margin-top:2px">여러 장 가능 · png, jpg, webp</div>
     </div>
     <div id="medImgPreview" style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px"></div>
   </div>
@@ -482,24 +462,25 @@ SLR 양성. MRI 안 찍었고 고혈압약 복용 중.
 <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
 </div>
 
-<!-- 결과 -->
+<!-- 오른쪽: 결과 -->
 <div>
   <div id="results" class="results-grid">
     <div class="empty-state">
-      🏥 <b>구리센트럴병원 비누제조기 사용법</b><br><br>
+      📋 <b>사용법</b><br><br>
       1️⃣ API 키 입력 (처음 한 번만)<br>
-      2️⃣ 진료과 선택 & 의사 정보 설정<br>
-      3️⃣ AI 모델 선택 (체크)<br>
-      4️⃣ 진료 내용 입력<br>
-      5️⃣ <strong style="color:var(--accent)">🧼 비누 제조</strong> 클릭!<br><br>
-      <span style="font-size:10px">결과 비교 후 📋 EMR 복사하세요</span>
+      2️⃣ 병원·의사 정보 설정 (처음 한 번만)<br>
+      3️⃣ SOAP 작성할 AI 모델 선택 (체크)<br>
+      4️⃣ 진료 내용 입력 (텍스트/녹음/파일)<br>
+      5️⃣ <strong style="color:var(--accent)">🧼 비누 제조</strong> 버튼 클릭!<br><br>
+      <span style="font-size:10px">선택한 모든 AI가 동시에 SOAP을 작성합니다.<br>결과를 비교한 후 마음에 드는 것을 📋 EMR 복사하세요.</span>
     </div>
   </div>
+  <!-- 이미지 결과 -->
   <div class="img-section" id="imgSection" style="display:none">
     <div class="card">
       <div class="card-hdr"><span class="card-title">🖼️ 의료 이미지 생성</span></div>
       <div class="card-body">
-        <textarea id="imgPrompt" rows="2" style="font-size:10px;min-height:40px" placeholder="SOAP 기반 자동 프롬프트"></textarea>
+        <textarea id="imgPrompt" rows="2" style="font-size:10px;min-height:40px" placeholder="SOAP 기반 자동 프롬프트 (수정 가능)"></textarea>
         <button class="btn btn-go" onclick="genImages()" style="margin-top:4px;background:linear-gradient(135deg,#7c3aed,#a855f7);font-size:11px">🖼️ 이미지 생성</button>
         <div class="img-results" id="imgResults"></div>
       </div>
@@ -508,16 +489,17 @@ SLR 양성. MRI 안 찍었고 고혈압약 복용 중.
 </div>
 </div>
 </div>
+<div style="text-align:center;padding:8px 16px;font-size:9px;color:var(--dim);border-top:1px solid var(--border);margin-top:20px">AI 생성 결과는 참고용이며, 최종 의무기록 작성 책임은 사용자(의사)에게 있습니다. 본 소프트웨어는 의료기기가 아닙니다.</div>
 <div class="toast" id="toast"></div>
 
 <script>
 // ===== PROVIDERS =====
 const PROVIDERS = {
   cerebras:{name:'⚡ Cerebras',color:'cerebras',apiType:'openai',baseUrl:'https://api.cerebras.ai/v1',keyId:'cerebras',models:[
-    {id:'cb-qw3',name:'Qwen3 235B',m:'qwen-3-235b-a22b-instruct-2507',tag:'best'},
-    {id:'cb-gptoss',name:'GPT-OSS 120B',m:'gpt-oss-120b',tag:'hot'},
+    {id:'cb-qw3',name:'Qwen3 235B (1400t/s)',m:'qwen-3-235b-a22b-instruct-2507',tag:'best'},
+    {id:'cb-gptoss',name:'GPT-OSS 120B (3000t/s)',m:'gpt-oss-120b',tag:'hot'},
     {id:'cb-glm47',name:'GLM 4.7 (355B)',m:'zai-glm-4.7',tag:'new'},
-    {id:'cb-llama31',name:'Llama 3.1 8B',m:'llama3.1-8b',tag:'fast'},
+    {id:'cb-llama31',name:'Llama 3.1 8B (2200t/s)',m:'llama3.1-8b',tag:'fast'},
   ]},
   gemini:{name:'💎 Gemini',color:'gemini',apiType:'gemini',baseUrl:'https://generativelanguage.googleapis.com/v1beta',keyId:'gemini',models:[
     {id:'gem31p',name:'Gemini 3.1 Pro',m:'gemini-3.1-pro-preview',tag:'best'},
@@ -525,9 +507,9 @@ const PROVIDERS = {
     {id:'gem31f',name:'Gemini 3.1 Flash',m:'gemini-3.1-flash-preview',tag:'fast'},
   ]},
   groq:{name:'🚀 Groq',color:'groq',apiType:'openai',baseUrl:'https://api.groq.com/openai/v1',keyId:'groq',models:[
-    {id:'grq-gptoss',name:'GPT-OSS 120B',m:'openai/gpt-oss-120b',tag:'best'},
+    {id:'grq-gptoss',name:'GPT-OSS 120B (500t/s)',m:'openai/gpt-oss-120b',tag:'best'},
     {id:'grq-llama4',name:'Llama 4 Scout 17B',m:'meta-llama/llama-4-scout-17b-16e-instruct',tag:'hot'},
-    {id:'grq-gptoss20',name:'GPT-OSS 20B',m:'openai/gpt-oss-20b',tag:'fast'},
+    {id:'grq-gptoss20',name:'GPT-OSS 20B (1000t/s)',m:'openai/gpt-oss-20b',tag:'fast'},
   ]},
   deepseek:{name:'💰 DeepSeek',color:'deepseek',apiType:'openai',baseUrl:'https://api.deepseek.com/v1',keyId:'deepseek',models:[
     {id:'ds-r1',name:'R1 Reasoner',m:'deepseek-reasoner',tag:'best'},
@@ -554,131 +536,25 @@ const API_KEYS_CONFIG = [
   {id:'openai',label:'🤖 OpenAI (Whisper+GPT)',placeholder:'sk-...'},
   {id:'anthropic',label:'🧠 Claude',placeholder:'sk-ant-...'},
   {id:'gemini',label:'💎 Gemini',placeholder:'AIza...'},
-  {id:'groq',label:'🚀 Groq (텍스트+Whisper)',placeholder:'gsk_...'},
+  {id:'groq',label:'🚀 Groq (텍스트+Whisper STT)',placeholder:'gsk_...'},
   {id:'xai',label:'🤖 xAI (Grok)',placeholder:'xai-...'},
   {id:'deepseek',label:'💰 DeepSeek',placeholder:'sk-...'},
   {id:'cerebras',label:'⚡ Cerebras',placeholder:'csk-...'},
+  {id:'novelai',label:'🎨 NovelAI',placeholder:'pst-...'},
 ];
 
 const apiKeys = {};
 function getKey(id){ return apiKeys[id] || localStorage.getItem('soap_key_'+id) || ''; }
 
-// ===== 진료과별 프리셋 =====
-const DEPT_PRESETS = {
-  '신경외과': {
-    specialty: 'Spine Surgery',
-    patients: '퇴행성 척추질환, 디스크, 협착증, 뇌종양, 두부외상',
-    philosophy: `• 척추수술은 확실한 호전을 기대할 경우에만 수술 결정
-• 보존적 치료 3개월 이상 시행 후 수술 고려
-• TLIF 선호, 최소침습(MIS) 적극 활용
-• 고령 환자는 전신마취 리스크 평가 우선`,
-    meds: `[자주 쓰는 약제]
-• 프레가발린 75mg bid → 최대 300mg/day
-• 가바펜틴 300mg tid
-• 트라마돌/아세트아미노펜 37.5/325mg
-• 덱사메타손 0.5mg
-
-[비급여]
-• 프롤로테라피, 도수치료, 체외충격파`,
-    instruction: '수술 환자는 수술명 기재, 약물은 용량 포함, ICD코드 병기',
-    soapMode: 'standard'
-  },
-  '정형외과': {
-    specialty: 'Joint / Trauma / Sports Medicine',
-    patients: '관절질환, 골절, 인대손상, 스포츠 손상',
-    philosophy: `• 관절 보존 우선, 인공관절은 최후 수단
-• 골절은 정확한 정복과 고정
-• 재활 프로그램 동반 처방`,
-    meds: `[자주 쓰는 약제]
-• NSAIDs (셀레콕시브, 아세클로페낙)
-• 골다공증 약제 (비스포스포네이트)
-• 근이완제 (에페리손, 바클로펜)
-
-[비급여]
-• 관절 주사 (HA, PRP)
-• 체외충격파, 도수치료`,
-    instruction: '골절 시 분류(AO/Weber 등) 기재, ROM 수치 포함',
-    soapMode: 'standard'
-  },
-  '일반외과': {
-    specialty: 'General / GI / Hepatobiliary Surgery',
-    patients: '복부 수술, 탈장, 담낭, 갑상선, 유방질환',
-    philosophy: `• 최소침습수술(복강경) 우선
-• 수술 적응증 엄격히 평가
-• 합병증 예방에 주력`,
-    meds: `[자주 쓰는 약제]
-• PPI (라베프라졸, 판토프라졸)
-• 항생제 (세파계열)
-• 진통제 (아세트아미노펜, 케토락)`,
-    instruction: '수술 소견 상세 기술, 병리 결과 포함 시 기재',
-    soapMode: 'standard'
-  },
-  '내과': {
-    specialty: 'Internal Medicine',
-    patients: '만성질환(DM, HTN, CKD), 감염, 소화기, 호흡기',
-    philosophy: `• 근거 기반 약물 치료
-• 만성질환 장기 관리 계획
-• 검사 결과 해석 및 약물 조절`,
-    meds: `[자주 쓰는 약제]
-• 항고혈압제 (ARB, CCB, BB)
-• 당뇨약 (메트포르민, DPP-4i, SGLT2i)
-• PPI, 항혈소판제
-
-[모니터링]
-• CBC, BMP, LFT, HbA1c, Lipid panel`,
-    instruction: '검사 수치 변화 추이 기록, 약물 조절 이유 명시',
-    soapMode: 'standard'
-  },
-  '마취과': {
-    specialty: 'Anesthesiology / Pain Medicine',
-    patients: '수술 전 평가, 통증 클리닉, 중환자 관리',
-    philosophy: `• 안전한 마취 관리가 최우선
-• ASA 분류 기반 리스크 평가
-• 통증 클리닉: 다학제 접근`,
-    meds: `[마취 관련]
-• 프로포폴, 세보플루란
-• 로쿠로니움
-• 부피바카인, 리도카인
-
-[통증 관리]
-• 경막외 주사, 신경차단술
-• 트리거포인트 주사
-• PCA 관리 (펜타닐)`,
-    instruction: 'ASA 분류, NPO 시간, 기도 평가 포함',
-    soapMode: 'standard'
-  },
-  '영상의학과': {
-    specialty: 'Diagnostic Radiology',
-    patients: 'X-ray, CT, MRI, 초음파 판독',
-    philosophy: `• 정확한 판독 소견 기술
-• 이전 검사와의 비교 분석
-• 임상 소견과의 correlation`,
-    meds: `[조영제]
-• 요오드계 조영제
-• 가돌리늄 조영제
-• 경구 조영제 (대장내시경 전처치)`,
-    instruction: '판독 소견은 Objective에 가장 상세하게. Findings → Impression 구조. 이전 검사와 비교 필수.',
-    soapMode: 'radiology'
-  }
-};
-
-// ===== 진료과별 SOAP 프롬프트 =====
 const SOAP_PROMPTS = {
-  brief: `전문의의 진료기록 변환 AI.\n규칙: 최대한 간결. 각 항목 1-2줄. 핵심만.\n출력:\nS: [증상]\nO: [소견]\nA: [진단]\nP: [계획]`,
-  normal: `전문의의 진료기록 변환 AI.\n규칙: S/O 적절 분량. A/P 충실. EMR 최적화.\n출력:\nS: [주관적]\nO: [객관적]\nA: [평가]\nP: [계획]`,
-  detailed: `전문의의 진료기록 변환 AI.\n규칙: S-CC/발병시기/악화완화인자 상세. O-이학적검사/영상 상세. A-감별진단+ICD코드. P-약물용량/시술/f/u일정 구체적.\n출력:\nS: [상세]\nO: [상세]\nA: [감별포함]\nP: [구체적]`
-};
-
-// 영상의학과 전용 프롬프트
-const RADIOLOGY_PROMPTS = {
-  brief: `영상의학과 판독 보고서 변환 AI.\n규칙: 간결하게.\nS: 의뢰 사유 (1-2줄)\nO: 판독 소견 (Findings 핵심만)\nA: Impression (진단)\nP: 추가 검사 권고/follow-up`,
-  normal: `영상의학과 판독 보고서 변환 AI.\n규칙: O(Objective)에 판독 소견을 가장 상세하게 작성. Findings를 체계적으로 기술.\nS: Clinical indication / 의뢰 사유\nO: **[Findings]** 각 장기/부위별 소견을 체계적으로 상세 기술. 크기, 위치, 신호강도, 조영증강 패턴 등 포함. 정상 소견도 기술.\nA: **[Impression]** 핵심 진단. 감별진단 포함. 이전 검사 비교 소견.\nP: 권고사항 (추가 검사, follow-up 간격, 임상 correlation 필요 사항)`,
-  detailed: `영상의학과 판독 보고서 변환 AI.\n규칙: O(Objective)가 보고서의 핵심. 매우 상세하게.\nS: Clinical indication, 의뢰과, 환자 증상, 이전 검사 이력\nO: **[Technique]** 검사 방법, 조영제 사용 여부\n**[Findings]** 부위별 매우 상세한 소견:\n- 각 장기/구조물 순서대로\n- 크기(mm), 위치, 형태, 신호특성\n- 조영증강 패턴, 확산제한 여부\n- 정상 소견 포함\n- 이전 검사와 비교 (변화 기술)\nA: **[Impression]** 1. 주진단 2. 부수 소견 3. 감별진단 — ICD코드 병기\nP: 1. 추가 검사 권고 2. Follow-up 간격 3. 임상 correlation 필요 사항`
+  brief:`전문의의 진료기록 변환 AI.\n규칙: 최대한 간결. 각 항목 1-2줄. 핵심만.\n출력:\nS: [증상]\nO: [소견]\nA: [진단]\nP: [계획]`,
+  normal:`전문의의 진료기록 변환 AI.\n규칙: S/O 적절 분량. A/P 충실. EMR 최적화.\n출력:\nS: [주관적]\nO: [객관적]\nA: [평가]\nP: [계획]`,
+  detailed:`전문의의 진료기록 변환 AI.\n규칙: S-CC/발병시기/악화완화인자 상세. O-이학적검사/영상 상세. A-감별진단+ICD코드. P-약물용량/시술/f/u일정 구체적.\n출력:\nS: [상세]\nO: [상세]\nA: [감별포함]\nP: [구체적]`
 };
 
 // ===== INIT =====
 function init() {
-  renderApiKeys(); renderModels(); renderCustomModels(); loadProfile(); renderCustomStyles();
+  renderApiKeys(); renderModels(); renderCustomModels(); loadProfile();
   document.querySelectorAll('.detail-opt').forEach(opt => {
     opt.addEventListener('click', e => {
       const inp = opt.querySelector('input');
@@ -728,80 +604,43 @@ function selFast(){selNone();document.querySelectorAll('.model-cb').forEach(l=>{
 
 // ===== CUSTOM MODEL =====
 let customModelList = JSON.parse(localStorage.getItem('soap_custom_models')||'[]');
+
 function renderCustomModels(){
   const div=document.getElementById('customModels');
   div.innerHTML=customModelList.map((cm,i)=>`<label class="model-cb sel" data-pid="${cm.provider}" data-mid="custom_${i}" style="border-color:var(--accent)"><input type="checkbox" value="custom_${i}" checked onchange="updCount()">🔧 ${cm.modelId} <span style="font-size:8px;color:var(--dim)">(${cm.provider})</span><span style="cursor:pointer;margin-left:2px;color:#f87171;font-size:10px" onclick="event.stopPropagation();removeCustomModel(${i})">✕</span></label>`).join('');
   updCount();
 }
+
 function addCustomModel(){
-  const provider=document.getElementById('customProvider').value,modelId=document.getElementById('customModelId').value.trim();
-  if(!modelId){showToast('⚠️ 모델 ID 입력');return;}
-  if(customModelList.find(c=>c.modelId===modelId&&c.provider===provider)){showToast('⚠️ 이미 추가됨');return;}
-  customModelList.push({provider,modelId});localStorage.setItem('soap_custom_models',JSON.stringify(customModelList));
-  document.getElementById('customModelId').value='';renderCustomModels();showToast('✅ '+modelId+' 추가');
-}
-function removeCustomModel(i){customModelList.splice(i,1);localStorage.setItem('soap_custom_models',JSON.stringify(customModelList));renderCustomModels();}
-
-// ===== CUSTOM STYLE RULES =====
-let customStyleRules = JSON.parse(localStorage.getItem('soap_custom_styles')||'[]');
-function renderCustomStyles(){
-  const div=document.getElementById('customStyles');
-  div.innerHTML=customStyleRules.map((rule,i)=>`
-    <div class="custom-style-item">
-      <input type="text" value="${rule}" onchange="updateCustomStyle(${i},this.value)" placeholder="예: Assessment에 감별진단 3개 이상 포함">
-      <span style="cursor:pointer;color:#f87171;font-size:12px" onclick="removeCustomStyle(${i})">✕</span>
-    </div>`).join('');
-}
-function addCustomStyle(){customStyleRules.push('');localStorage.setItem('soap_custom_styles',JSON.stringify(customStyleRules));renderCustomStyles();}
-function updateCustomStyle(i,val){customStyleRules[i]=val;localStorage.setItem('soap_custom_styles',JSON.stringify(customStyleRules));}
-function removeCustomStyle(i){customStyleRules.splice(i,1);localStorage.setItem('soap_custom_styles',JSON.stringify(customStyleRules));renderCustomStyles();}
-
-// ===== DEPT CHANGE =====
-function onDeptChange(dept){
-  const preset = DEPT_PRESETS[dept];
-  if(!preset) return;
-  // 이미 저장된 프로필이 있으면 덮어쓸지 확인
-  const saved = localStorage.getItem('soap_profile');
-  if(saved){
-    const data = JSON.parse(saved);
-    if(data['pf-dept-select'] && data['pf-dept-select'] !== dept){
-      if(!confirm(`진료과를 "${dept}"(으)로 변경하면 기본값이 덮어씌워집니다.\n계속하시겠습니까?\n\n(이미 저장한 개인 설정은 💾 저장으로 유지됩니다)`)) {
-        document.getElementById('pf-dept-select').value = data['pf-dept-select'];
-        return;
-      }
-    }
-  }
-  document.getElementById('pf-specialty').value = preset.specialty;
-  document.getElementById('pf-patients').value = preset.patients;
-  document.getElementById('pf-philosophy').value = preset.philosophy;
-  document.getElementById('pf-meds').value = preset.meds;
-  document.getElementById('pf-instruction').value = preset.instruction;
-  updateProfileSummary();
-  showToast('🏷️ '+dept+' 기본 설정 적용!');
+  const provider=document.getElementById('customProvider').value;
+  const modelId=document.getElementById('customModelId').value.trim();
+  if(!modelId){showToast('⚠️ 모델 ID를 입력하세요');return;}
+  if(customModelList.find(c=>c.modelId===modelId&&c.provider===provider)){showToast('⚠️ 이미 추가된 모델');return;}
+  customModelList.push({provider,modelId});
+  localStorage.setItem('soap_custom_models',JSON.stringify(customModelList));
+  document.getElementById('customModelId').value='';
+  renderCustomModels();
+  showToast('✅ '+modelId+' 추가됨');
 }
 
+function removeCustomModel(i){
+  customModelList.splice(i,1);
+  localStorage.setItem('soap_custom_models',JSON.stringify(customModelList));
+  renderCustomModels();
+}
 function loadExample(){
-  const dept = document.getElementById('pf-dept-select')?.value || '신경외과';
-  const examples = {
-    '신경외과': [`50대 남성. 허리 통증 + 우측 다리 저림 3주.\nSLR 우측 양성 30도. VAS 7.\nMRI 미시행. 고혈압약 복용 중.\n계획: L-spine MRI, 가바펜틴, 물리치료.`,`65세 여성. 양측 하지 방사통 + 간헐적 파행 6개월.\nL4-5 spinal stenosis on MRI. VAS 6.\n신경차단술 고려.`],
-    '정형외과': [`60세 여자. 우측 무릎 통증 3개월. 계단 내려갈 때 심함.\nROM: flexion 120도. McMurray 음성. X-ray: medial joint space narrowing.\n관절 주사 고려.`],
-    '일반외과': [`45세 남자. 우상복부 통증 2일. 식후 악화.\n초음파: 담낭 결석 15mm, 담낭벽 비후.\nLC(복강경 담낭절제) 예정.`],
-    '내과': [`72세 남자. DM/HTN f/u. HbA1c 8.2%로 상승.\n현재 메트포르민 1000mg bid.\n자디앙 10mg 추가 고려.`],
-    '마취과': [`55세 여자. L4-5 TLIF 예정. ASA II.\nHTN (amlodipine 5mg). NPO 8시간.\n전신마취 계획. 기도 평가: Mallampati II.`],
-    '영상의학과': [`L-spine MRI 판독 의뢰.\n55세 남자. 우측 하지 방사통.\nFindings: L4-5 level right paracentral disc protrusion with right L5 nerve root compression.`]
-  };
-  const list = examples[dept] || examples['신경외과'];
-  document.getElementById('inputTxt').value = list[Math.floor(Math.random()*list.length)];
-  showToast('📋 '+dept+' 예시 로드');
+  const ex=[`50대 남성. 허리 통증 + 우측 다리 저림 3주.\nSLR 우측 양성 30도. VAS 7.\nMRI 미시행. 고혈압약 복용 중.\n계획: L-spine MRI, 가바펜틴, 물리치료.`,
+  `65세 여성. 양측 하지 방사통 + 간헐적 파행 6개월.\nL4-5 spinal stenosis on MRI. VAS 6.\n신경차단술 고려. 수술 상담 예정.`];
+  document.getElementById('inputTxt').value=ex[Math.floor(Math.random()*ex.length)];showToast('📋 예시 로드됨');
 }
 
 // ===== PROFILE =====
-const PF_FIELDS=['pf-dept-select','pf-hospital','pf-doctor','pf-specialty','pf-years','pf-patients','pf-philosophy','pf-meds','pf-stockmeds','pf-instruction'];
+const PF_FIELDS=['pf-hospital','pf-doctor','pf-dept','pf-specialty','pf-years','pf-patients','pf-philosophy','pf-meds','pf-stockmeds','pf-instruction'];
 
 function saveProfile(){
-  const data={};PF_FIELDS.forEach(id=>{const el=document.getElementById(id);data[id]=el?.value||'';});
+  const data={};PF_FIELDS.forEach(id=>{data[id]=document.getElementById(id)?.value||'';});
   localStorage.setItem('soap_profile',JSON.stringify(data));
-  updateProfileSummary();showToast('💾 프로필 저장 완료!');
+  updateProfileSummary();showToast('💾 프로필 전체 저장됨');
 }
 
 function loadProfile(){
@@ -811,123 +650,100 @@ function loadProfile(){
 }
 
 function resetProfile(){
-  if(!confirm('프로필을 초기화하시겠습니까?'))return;
-  PF_FIELDS.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('pf-hospital').value='구리센트럴병원';
+  const defaults={'pf-hospital':'구리센트럴병원','pf-doctor':'','pf-dept':'신경외과','pf-specialty':'Spine Surgery','pf-years':'20','pf-patients':'','pf-philosophy':'','pf-meds':'','pf-stockmeds':'','pf-instruction':''};
+  PF_FIELDS.forEach(id=>{const el=document.getElementById(id);if(el)el.value=defaults[id]||'';});
   localStorage.removeItem('soap_profile');updateProfileSummary();showToast('🔄 초기화됨');
 }
 
 function updateProfileSummary(){
-  const dept=document.getElementById('pf-dept-select')?.value||'';
+  const h=document.getElementById('pf-hospital')?.value?.trim()||'구리센트럴병원';
+  const d=document.getElementById('pf-dept')?.value?.trim()||'NS';
+  const s=document.getElementById('pf-specialty')?.value?.trim()||'';
   const dr=document.getElementById('pf-doctor')?.value?.trim()||'';
-  const spec=document.getElementById('pf-specialty')?.value?.trim()||'';
-  let sum='구리센트럴병원';
-  if(dept)sum+=` · ${dept}`;if(spec)sum+=` · ${spec}`;if(dr)sum+=` · ${dr}`;
+  const hasMeds=document.getElementById('pf-meds')?.value?.trim()?'💊':'';
+  const hasPhil=document.getElementById('pf-philosophy')?.value?.trim()?'🧠':'';
+  const hasStock=document.getElementById('pf-stockmeds')?.value?.trim()?'🏥':'';
+  let sum=`${h} · ${d}`;if(s)sum+=` · ${s}`;if(dr)sum+=` · ${dr}`;
+  if(hasMeds||hasPhil||hasStock)sum+=` ${hasPhil}${hasMeds}${hasStock}`;
   document.getElementById('profileSummary').textContent=sum;
 }
 
 function getProfileContext(){
-  const dept=document.getElementById('pf-dept-select')?.value||'';
+  const h=document.getElementById('pf-hospital')?.value?.trim()||'';
   const dr=document.getElementById('pf-doctor')?.value?.trim()||'';
+  const dept=document.getElementById('pf-dept')?.value?.trim()||'';
   const spec=document.getElementById('pf-specialty')?.value?.trim()||'';
   const yrs=document.getElementById('pf-years')?.value?.trim()||'';
   const pts=document.getElementById('pf-patients')?.value?.trim()||'';
   const phil=document.getElementById('pf-philosophy')?.value?.trim()||'';
   const meds=document.getElementById('pf-meds')?.value?.trim()||'';
-  const stockmeds=document.getElementById('pf-stockmeds')?.value?.trim()||'';
   const inst=document.getElementById('pf-instruction')?.value?.trim()||'';
-  let ctx='병원: 구리센트럴병원. ';
-  if(dept)ctx+=`진료과: ${dept}. `;if(dr)ctx+=`의사: ${dr}. `;
-  if(spec)ctx+=`전공: ${spec}. `;if(yrs)ctx+=`경력: ${yrs}년. `;
-  if(pts)ctx+=`주요 환자군: ${pts}. `;
-  if(phil)ctx+=`\n\n[진료 철학]\n${phil}`;
-  if(meds)ctx+=`\n\n[약제/처방 정보]\n${meds}`;
-  if(stockmeds)ctx+=`\n\n[구비약물 — 처방 시 구비약 우선]\n${stockmeds}`;
-  if(inst)ctx+=`\n\n[특별 지시]\n${inst}`;
-  // 커스텀 스타일 규칙
-  const activeRules = customStyleRules.filter(r=>r.trim());
-  if(activeRules.length) ctx+=`\n\n[개인 SOAP 스타일 규칙]\n${activeRules.map((r,i)=>`${i+1}. ${r}`).join('\n')}`;
+  let ctx='';
+  if(h)ctx+=`병원: ${h}. `;if(dr)ctx+=`의사: ${dr}. `;
+  if(dept)ctx+=`진료과: ${dept}. `;if(spec)ctx+=`전공: ${spec}. `;
+  if(yrs)ctx+=`경력: ${yrs}년. `;if(pts)ctx+=`주요 환자군: ${pts}. `;
+  if(phil)ctx+=`\n\n[진료 철학 및 수술 원칙]\n${phil}`;
+  if(meds)ctx+=`\n\n[약제/수가/처방 정보 — Plan 작성 시 이 정보를 참고하여 구체적 약제명, 용량, 비급여 항목 및 예상 비용을 포함하세요]\n${meds}`;
+  const stockmeds=document.getElementById('pf-stockmeds')?.value?.trim()||'';
+  if(stockmeds)ctx+=`\n\n[외래/병동 구비약물 — Plan에서 처방 시 이 구비약물을 우선 사용하세요. 구비되지 않은 약은 원외처방으로 구분하세요]\n${stockmeds}`;
+  if(inst)ctx+=`\n\n[특별 지시사항]\n${inst}`;
   return ctx;
 }
 
-function getCurrentSoapMode(){
-  const dept = document.getElementById('pf-dept-select')?.value||'';
-  return DEPT_PRESETS[dept]?.soapMode || 'standard';
-}
-
-// ===== 구리센트럴 약품목록 로드 =====
-async function loadGuriMeds(){
-  const btn=document.getElementById('loadMedsBtn');
-  const st=document.getElementById('medsLoadStatus');
-  btn.disabled=true; btn.textContent='⏳ 로딩...';
-  try{
-    // GitHub Pages에서 meds.json 로드 시도
-    let data;
-    const urls = [
-      './meds.json',
-      'https://guricentral.github.io/soap/meds.json',
-      'https://schockwave720.github.io/soap-note/meds.json'
-    ];
-    let loaded = false;
-    for(const url of urls){
-      try{
-        const r = await fetch(url);
-        if(r.ok){ data = await r.json(); loaded=true; break; }
-      }catch(e){ continue; }
-    }
-    if(!loaded || !data){
-      st.textContent='⚠️ meds.json을 같은 폴더에 올려주세요';st.style.color='#f59e0b';
-      btn.disabled=false;btn.textContent='💊 2026 약품목록 불러오기';return;
-    }
-    // 효능별로 텍스트 생성
-    let text = '[구리센트럴병원 2026년 약품목록]\n';
-    let total = 0;
-    for(const [cat, items] of Object.entries(data).sort()){
-      text += `\n[${cat}] (${items.length}개)\n`;
-      items.forEach(item => {
-        const name = typeof item === 'string' ? item : `${item.n} (${item.i})`;
-        text += `• ${name}\n`;
-        total++;
-      });
-    }
-    const el = document.getElementById('pf-stockmeds');
-    el.value = text.trim();
-    st.textContent = `✅ ${total}개 약품 로드 완료!`;
-    st.style.color = 'var(--green)';
-    showToast(`💊 ${total}개 약품 로드!`);
-  }catch(err){
-    st.textContent='❌ '+err.message; st.style.color='#ef4444';
-  }finally{
-    btn.disabled=false; btn.textContent='💊 2026 약품목록 불러오기';
-  }
-}
-
-// ===== FILE HANDLERS =====
+// 구비약물 파일 업로드
 async function handleStockMedFile(e){
   const file=e.target.files[0];if(!file)return;
+  const st=document.getElementById('pfStockFileStatus');
+  st.textContent='읽는 중...';st.style.color='var(--accent)';
   try{
-    let text='';const ext=file.name.split('.').pop().toLowerCase();
-    if(ext==='xlsx'||ext==='xls'){const buf=await file.arrayBuffer();const wb=XLSX.read(buf,{type:'array'});wb.SheetNames.forEach(name=>{text+=`[${name}]\n`;text+=XLSX.utils.sheet_to_csv(wb.Sheets[name],{FS:'\t'})+'\n\n';});}
-    else{text=await file.text();}
-    if(!text.trim()){showToast('⚠️ 빈 파일');return;}
+    let text='';
+    const ext=file.name.split('.').pop().toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){
+      const buf=await file.arrayBuffer();
+      const wb=XLSX.read(buf,{type:'array'});
+      wb.SheetNames.forEach(name=>{text+=`[${name}]\n`;text+=XLSX.utils.sheet_to_csv(wb.Sheets[name],{FS:'\t'})+'\n\n';});
+    } else { text=await file.text(); }
+    if(!text.trim()){st.textContent='⚠️ 파일 내용 없음';st.style.color='#f59e0b';return;}
     const el=document.getElementById('pf-stockmeds');
-    el.value=(el.value.trim()?el.value.trim()+'\n\n':'')+`[${file.name}]\n`+text.trim();
-    showToast('✅ '+file.name+' 추가');
-  }catch(err){showToast('❌ '+err.message);}finally{e.target.value='';}
+    const existing=el.value.trim();
+    el.value=(existing?existing+'\n\n':'')+'['+file.name+']\n'+text.trim();
+    st.textContent='✅ '+file.name+' 추가됨';st.style.color='var(--green)';
+    showToast('✅ 구비약물 정보 추가됨');
+  }catch(err){st.textContent='❌ '+err.message;st.style.color='#ef4444';}
+  finally{e.target.value='';}
 }
 
+// 약제/수가 파일 업로드
 async function handleProfileFile(e){
   const file=e.target.files[0];if(!file)return;
   const st=document.getElementById('pfFileStatus');
+  st.textContent='읽는 중...';st.style.color='var(--accent)';
   try{
-    let text='';const ext=file.name.split('.').pop().toLowerCase();
-    if(ext==='xlsx'||ext==='xls'){const buf=await file.arrayBuffer();const wb=XLSX.read(buf,{type:'array'});wb.SheetNames.forEach(name=>{text+=`[${name}]\n`;text+=XLSX.utils.sheet_to_csv(wb.Sheets[name],{FS:'\t'})+'\n\n';});}
-    else{text=await file.text();}
-    if(!text.trim()){st.textContent='⚠️ 빈 파일';return;}
+    let text='';
+    const ext=file.name.split('.').pop().toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){
+      // Excel → 텍스트 변환
+      const buf=await file.arrayBuffer();
+      const wb=XLSX.read(buf,{type:'array'});
+      wb.SheetNames.forEach(name=>{
+        text+=`[시트: ${name}]\n`;
+        const ws=wb.Sheets[name];
+        text+=XLSX.utils.sheet_to_csv(ws,{FS:'\t'})+'\n\n';
+      });
+    } else {
+      text=await file.text();
+    }
+    if(!text.trim()){st.textContent='⚠️ 파일 내용 없음';st.style.color='#f59e0b';return;}
+    // 기존 약제 정보에 추가
     const el=document.getElementById('pf-meds');
-    el.value=(el.value.trim()?el.value.trim()+'\n\n':'')+`[${file.name}]\n`+text.trim();
-    st.textContent='✅ '+file.name;st.style.color='var(--green)';showToast('✅ 약제 정보 추가');
-  }catch(err){st.textContent='❌ '+err.message;st.style.color='#ef4444';}finally{e.target.value='';}
+    const existing=el.value.trim();
+    el.value=(existing?existing+'\n\n':'')+'['+file.name+'에서 불러옴]\n'+text.trim();
+    st.textContent='✅ '+file.name+' 로드 완료 (약제 정보란에 추가됨)';
+    st.style.color='var(--green)';
+    showToast('✅ '+file.name+' → 약제 정보에 추가됨');
+  }catch(err){
+    st.textContent='❌ 읽기 실패: '+err.message;st.style.color='#ef4444';
+  }finally{e.target.value='';}
 }
 
 // ===== API CALL =====
@@ -936,30 +752,38 @@ async function callAPI(provKey,modelInfo,inputText,detailLevel,langMode){
   if(!key)throw new Error(`${prov.name} API 키 없음`);
   const langInst=langMode==='bilingual'?'\n언어: 한글+영어 병기':'\n언어: 영어 약어 위주, S는 한글';
   const profileCtx=getProfileContext();
-  const imgNote=medImages.length?'\n\n첨부된 MRI/CT 영상이 있습니다. 영상 소견을 O와 A에 반영해주세요.':'';
-  // 영상의학과면 전용 프롬프트 사용
-  const soapMode = getCurrentSoapMode();
-  const prompts = soapMode==='radiology' ? RADIOLOGY_PROMPTS : SOAP_PROMPTS;
-  const sysPrompt=(prompts[detailLevel]||prompts.normal)+langInst+imgNote+(profileCtx?'\n\n의사/병원 정보: '+profileCtx:'');
+  const imgNote=medImages.length?'\n\n첨부된 MRI/CT 영상이 있습니다. 영상 소견을 분석하여 O(Objective)와 A(Assessment)에 반영해주세요. 영상에서 관찰되는 이상 소견을 구체적으로 기술하세요.':'';
+  const sysPrompt=(SOAP_PROMPTS[detailLevel]||SOAP_PROMPTS.normal)+langInst+imgNote+(profileCtx?'\n\n의사/병원 정보: '+profileCtx:'');
   const userMsg=`다음 진료 내용을 SOAP으로 변환해줘:\n\n${inputText}`;
 
   if(prov.apiType==='anthropic'){
+    // Claude: vision 지원
     const content=[];
-    if(medImages.length){medImages.forEach(img=>{content.push({type:'image',source:{type:'base64',media_type:img.mimeType,data:img.base64}});});}
+    if(medImages.length){
+      medImages.forEach(img=>{content.push({type:'image',source:{type:'base64',media_type:img.mimeType,data:img.base64}});});
+    }
     content.push({type:'text',text:userMsg});
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:modelInfo.m,max_tokens:2000,system:sysPrompt,messages:[{role:'user',content}]})});
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:modelInfo.m,max_tokens:1500,system:sysPrompt,messages:[{role:'user',content}]})});
     const d=await r.json();if(d.error)throw new Error(d.error.message);return d.content[0].text;
+
   } else if(prov.apiType==='gemini'){
+    // Gemini: vision 지원
     const parts=[];
-    if(medImages.length){medImages.forEach(img=>{parts.push({inline_data:{mime_type:img.mimeType,data:img.base64}});});}
+    if(medImages.length){
+      medImages.forEach(img=>{parts.push({inline_data:{mime_type:img.mimeType,data:img.base64}});});
+    }
     parts.push({text:userMsg});
     const r=await fetch(`${prov.baseUrl}/models/${modelInfo.m}:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:sysPrompt}]},contents:[{parts}]})});
     const d=await r.json();if(d.error)throw new Error(d.error.message);return d.candidates[0].content.parts[0].text;
+
   } else {
+    // OpenAI-compatible: GPT-5.4/Grok 등 vision 지원
     const hdrs={'Content-Type':'application/json','Authorization':`Bearer ${key}`};
+    if(provKey==='openrouter'){hdrs['HTTP-Referer']='https://soap.kr';hdrs['X-Title']='SOAP';}
     const userContent=[];
+    // 비전 지원 프로바이더: openai, xai (grok)
     const visionProviders=['openai','xai'];
-    if(medImages.length&&visionProviders.includes(provKey)){
+    if(medImages.length && visionProviders.includes(provKey)){
       medImages.forEach(img=>{userContent.push({type:'image_url',image_url:{url:`data:${img.mimeType};base64,${img.base64}`,detail:'high'}});});
       userContent.push({type:'text',text:userMsg});
     }
@@ -967,12 +791,23 @@ async function callAPI(provKey,modelInfo,inputText,detailLevel,langMode){
     if(userContent.length){messages.push({role:'user',content:userContent});}
     else{messages.push({role:'user',content:userMsg});}
     const body={model:modelInfo.m,messages};
-    if(provKey==='openai'&&(modelInfo.m.startsWith('gpt-5')||modelInfo.m.startsWith('o'))){body.max_completion_tokens=2000;}
-    else{body.max_tokens=2000;}
-    if(provKey==='cerebras'&&(modelInfo.m.includes('glm')||modelInfo.m.includes('qwen'))){body.reasoning_effort='none';}
-    if(provKey==='groq'&&(modelInfo.m.includes('qwen3')||modelInfo.m.includes('llama-4'))){messages[0].content+='\n\nIMPORTANT: Do NOT use <think> tags. Respond directly.';}
+    // OpenAI GPT-5.4/o-series는 max_completion_tokens 사용
+    if(provKey==='openai'&&(modelInfo.m.startsWith('gpt-5')||modelInfo.m.startsWith('o'))){
+      body.max_completion_tokens=1500;
+    } else {
+      body.max_tokens=1500;
+    }
+    // Cerebras GLM 4.7 / Qwen3: reasoning 비활성화 (SOAP 직접 출력)
+    if(provKey==='cerebras'&&(modelInfo.m.includes('glm')||modelInfo.m.includes('qwen'))){
+      body.reasoning_effort='none';
+    }
+    // Groq: thinking 모델 대응 (system prompt에 직접 지시)
+    if(provKey==='groq'&&(modelInfo.m.includes('qwen3')||modelInfo.m.includes('llama-4'))){
+      messages[0].content+='\n\nIMPORTANT: Do NOT use <think> tags. Respond with the SOAP note directly.';
+    }
     const r=await fetch(`${prov.baseUrl}/chat/completions`,{method:'POST',headers:hdrs,body:JSON.stringify(body)});
     const d=await r.json();if(d.error)throw new Error(d.error.message||JSON.stringify(d.error));
+    // <think> 태그 제거 (reasoning 모델 대응)
     let result=d.choices[0].message.content||'';
     result=result.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
     return result;
@@ -985,46 +820,45 @@ function parseSOAP(text){
   let cur=null;
   for(const line of text.split('\n')){
     const m=line.match(/^(?:\*\*)?(?:##?\s*)?(?:\[)?([SOAP])(?:\])?(?:\*\*)?[\s]*[:：\-|]?\s*(.*)/i);
-    const m2=line.match(/^(?:\*\*)?(Subjective|Objective|Assessment|Plan|Findings|Impression|Technique)(?:\*\*)?[\s]*[:：\-|]?\s*(.*)/i);
+    const m2=line.match(/^(?:\*\*)?(Subjective|Objective|Assessment|Plan)(?:\*\*)?[\s]*[:：\-|]?\s*(.*)/i);
     if(m&&'SOAP'.includes(m[1].toUpperCase())){cur=m[1].toUpperCase();if(m[2]?.trim())s[cur]+=m[2].trim()+'\n';}
-    else if(m2){
-      const map={subjective:'S',objective:'O',assessment:'A',plan:'P',findings:'O',impression:'A',technique:'O'};
-      cur=map[m2[1].toLowerCase()]||null;if(m2[2]?.trim()&&cur)s[cur]+=m2[2].trim()+'\n';
-    }
+    else if(m2){const map={subjective:'S',objective:'O',assessment:'A',plan:'P'};cur=map[m2[1].toLowerCase()];if(m2[2]?.trim())s[cur]+=m2[2].trim()+'\n';}
     else if(cur&&line.trim())s[cur]+=line.replace(/\*\*/g,'').trim()+'\n';
   }
   return s;
 }
 
-function renderSOAPBlocks(text){
-  const s=parseSOAP(text);
-  const mode=getCurrentSoapMode();
-  const labels=mode==='radiology'
-    ? {S:'Clinical Indication',O:'Findings (판독소견)',A:'Impression (진단)',P:'Recommendation'}
-    : {S:'Subjective',O:'Objective',A:'Assessment',P:'Plan'};
-  return ['S','O','A','P'].map(k=>`<div class="soap-block ${k.toLowerCase()}"><div class="soap-lbl">${k} · ${labels[k]}</div><div class="soap-txt">${(s[k]||'확인 필요').trim()}</div></div>`).join('');
+function renderSOAPBlocks(text,mid){
+  const s=parseSOAP(text),labels={S:'Subjective',O:'Objective',A:'Assessment',P:'Plan'};
+  const warning='<div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:5px;padding:6px 10px;margin-bottom:10px;font-size:10px;color:#f59e0b">⚠️ AI가 생성한 초안입니다. 반드시 의사의 검토 후 EMR에 입력하세요.</div>';
+  return warning+['S','O','A','P'].map(k=>`<div class="soap-block ${k.toLowerCase()}"><div class="soap-lbl">${k} · ${labels[k]}</div><div class="soap-txt">${(s[k]||'확인 필요').trim()}</div></div>`).join('');
 }
 
 // ===== MAIN RUN =====
 async function runAll(){
   const inputText=document.getElementById('inputTxt').value.trim();
-  if(!inputText){showToast('⚠️ 진료 내용 입력 필요');return;}
+  if(!inputText){showToast('⚠️ 진료 내용을 입력하세요');return;}
   const detailLevel=document.querySelector('input[name="detailLevel"]:checked')?.value||'normal';
   const langMode=document.querySelector('input[name="langMode"]:checked')?.value||'en';
   const selected=[];
   document.querySelectorAll('.model-cb input:checked').forEach(cb=>{
     const l=cb.closest('.model-cb'),pid=l.dataset.pid,mid=l.dataset.mid;
-    if(mid?.startsWith('custom_')){
-      const idx=parseInt(mid.split('_')[1]);const cm=customModelList[idx];
-      if(cm){const prov=PROVIDERS[cm.provider];if(prov)selected.push({pid:cm.provider,prov,model:{id:mid,name:cm.modelId,m:cm.modelId}});}
+    if(mid&&mid.startsWith('custom_')){
+      const idx=parseInt(mid.split('_')[1]);
+      const cm=customModelList[idx];
+      if(cm){
+        const prov=PROVIDERS[cm.provider];
+        if(prov){selected.push({pid:cm.provider,prov,model:{id:mid,name:cm.modelId,m:cm.modelId}});}
+      }
     } else {
       const prov=PROVIDERS[pid],model=prov?.models.find(m=>m.id===mid);
       if(model)selected.push({pid,prov,model});
     }
   });
-  if(!selected.length){showToast('⚠️ AI 모델 선택 필요');return;}
+  if(!selected.length){showToast('⚠️ AI 모델을 선택하세요');return;}
   const btn=document.getElementById('goBtn');btn.disabled=true;btn.textContent=`⏳ ${selected.length}개 AI 비누 제조 중...`;
-  const resultsDiv=document.getElementById('results');resultsDiv.innerHTML='';window._cardMap={};
+  const resultsDiv=document.getElementById('results');resultsDiv.innerHTML='';
+  window._cardMap={};
   selected.forEach(({pid,prov,model})=>{
     const div=document.createElement('div');div.className='result-card';div.id='rc_'+model.id;
     div.innerHTML=`<div class="result-hdr"><div class="model-badge"><span class="model-name">${model.name}</span><span class="model-provider" style="background:var(--${prov.color})">${prov.name}</span></div><button class="btn-copy" id="copy_${model.id}" onclick="copyCard('${model.id}')" disabled>📋 EMR 복사</button></div><div class="result-body" id="body_${model.id}"><div class="loading-box"><div class="spinner"></div><div style="font-size:10px;color:var(--dim)">${model.name} 변환 중...</div></div></div>`;
@@ -1034,14 +868,18 @@ async function runAll(){
   await Promise.allSettled(selected.map(async({pid,prov,model})=>{
     try{
       const result=await callAPI(pid,model,inputText,detailLevel,langMode);
-      document.getElementById('body_'+model.id).innerHTML=renderSOAPBlocks(result);
+      document.getElementById('body_'+model.id).innerHTML=renderSOAPBlocks(result,model.id);
       document.getElementById('copy_'+model.id).disabled=false;
       window._cardMap[model.id].result=result;
     }catch(err){document.getElementById('body_'+model.id).innerHTML=`<div class="err-box">❌ ${err.message}</div>`;}
     finally{done++;fill.style.width=(done/total*100)+'%';}
   }));
-  btn.disabled=false;btn.textContent='🧼 SOAP 변환 시작!';showToast(`✅ ${done}개 완료!`);
-  buildImagePrompt();document.getElementById('imgSection').style.display='block';genImages();
+  btn.disabled=false;btn.textContent='🧼 SOAP 변환 시작!';
+  showToast(`✅ ${done}개 완료!`);
+  // 이미지 자동 생성
+  buildImagePrompt();
+  document.getElementById('imgSection').style.display='block';
+  genImages();
 }
 
 function copyCard(mid){
@@ -1054,29 +892,34 @@ function copyCard(mid){
 // ===== IMAGE GENERATION =====
 function buildImagePrompt(){
   if(!window._cardMap)return;
-  let soap='';for(const id of Object.keys(window._cardMap)){if(window._cardMap[id].result){soap=window._cardMap[id].result;break;}}
-  if(!soap)return;const p=parseSOAP(soap);
-  document.getElementById('imgPrompt').value=`medical illustration, anatomical diagram, ${(p.A||'').trim()}, patient symptoms: ${(p.S||'').trim()}, clean medical textbook style, labeled anatomy, professional, landscape`.substring(0,800);
+  let soap='';
+  for(const id of Object.keys(window._cardMap)){if(window._cardMap[id].result){soap=window._cardMap[id].result;break;}}
+  if(!soap)return;
+  const p=parseSOAP(soap);
+  document.getElementById('imgPrompt').value=`medical illustration, anatomical diagram, ${(p.A||'').trim()}, patient symptoms: ${(p.S||'').trim()}, clean medical textbook style, labeled anatomy, professional healthcare infographic, white background, high detail, educational, landscape orientation, wide format`.substring(0,800);
 }
 
 async function genImages(){
   const prompt=document.getElementById('imgPrompt').value.trim();
-  if(!prompt){showToast('⚠️ 프롬프트 비어있음');return;}
-  const engines=[];document.querySelectorAll('input[name="imgEng"]:checked').forEach(cb=>engines.push(cb.value));
+  if(!prompt){showToast('⚠️ 이미지 프롬프트 비어있음');return;}
+  const engines=[];
+  document.querySelectorAll('input[name="imgEng"]:checked').forEach(cb=>engines.push(cb.value));
   if(!engines.length){showToast('⚠️ 이미지 엔진 선택');return;}
   const div=document.getElementById('imgResults');div.innerHTML='';
-  const labels={nanobana:'🍌 NanoBanana OG',nanobana2:'🍌 NanoBanana2 (4K)',nanobanapro:'👑 NanoBanana Pro',gpt:'🤖 GPT Image',dalle3:'🎨 DALL-E 3',grok:'⚡ Grok Image'};
+  const labels={nanobana:'🍌 NanoBanana (OG)',nanobana2:'🍌2 NanoBanana2 (4K)',nanobanapro:'🍌👑 NanoBanana Pro',gpt:'🤖 GPT Image 1',dalle3:'🎨 DALL-E 3',grok:'⚡ Grok',nai:'🎨 NovelAI'};
   engines.forEach(e=>{const el=document.createElement('div');el.className='img-loading';el.id='img_'+e;el.innerHTML=`<div style="text-align:center"><div class="spinner"></div><div style="font-size:10px;color:var(--dim)">${labels[e]} 생성 중...</div></div>`;div.appendChild(el);});
+
   await Promise.allSettled(engines.map(async eng=>{
     try{
       let url;
       switch(eng){
-        case 'nanobana':url=await genGeminiImage(prompt,'gemini-2.5-flash-image');break;
-        case 'nanobana2':url=await genGeminiImage(prompt,'gemini-3.1-flash-image-preview');break;
-        case 'nanobanapro':url=await genGeminiImage(prompt,'gemini-3-pro-image-preview');break;
-        case 'gpt':url=await genGPTImg(prompt);break;
-        case 'dalle3':url=await genDalle3(prompt);break;
-        case 'grok':url=await genGrokImg(prompt);break;
+        case 'nanobana': url=await genGeminiImage(prompt,'gemini-2.5-flash-image'); break;
+        case 'nanobana2': url=await genGeminiImage(prompt,'gemini-3.1-flash-image-preview'); break;
+        case 'nanobanapro': url=await genGeminiImage(prompt,'gemini-3-pro-image-preview'); break;
+        case 'gpt': url=await genGPTImg(prompt); break;
+        case 'dalle3': url=await genDalle3(prompt); break;
+        case 'grok': url=await genGrokImg(prompt); break;
+        case 'nai': url=await genNAI(prompt); break;
       }
       const el=document.getElementById('img_'+eng);el.className='img-result';
       el.innerHTML=`<img src="${url}" onclick="showImgModal(this.src,'${eng}')"><div class="img-label"><span>${labels[eng]}</span><button class="btn-sm" style="font-size:8px" onclick="downloadImg(this.closest('.img-result').querySelector('img').src,'soap_${eng}.png')">💾</button></div>`;
@@ -1085,72 +928,139 @@ async function genImages(){
   showToast('🖼️ 이미지 생성 완료!');
 }
 
+// Gemini Image (NanoBanana 시리즈 공용)
 async function genGeminiImage(prompt,model){
-  const key=getKey('gemini');if(!key)throw new Error('Gemini 키 필요');
-  const body={contents:[{parts:[{text:`Generate an image (horizontal wide 16:9): ${prompt.replace(/[{}\[\]<>]/g,'').substring(0,1800)}`}]}],generationConfig:{responseModalities:['TEXT','IMAGE']}};
-  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const key=getKey('gemini');if(!key)throw new Error('Gemini API 키 필요');
+  if(!model)model='gemini-2.5-flash-image';
+  const cleanPrompt=prompt.replace(/[{}\[\]<>]/g,'').substring(0,1800);
+  const body={
+    contents:[{parts:[{text:`Generate an image (horizontal wide 16:9): ${cleanPrompt}`}]}],
+    generationConfig:{responseModalities:['TEXT','IMAGE']}
+  };
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,{
+    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+  });
   if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error('Gemini: '+(e.error?.message||r.status));}
-  const data=await r.json();const parts=data.candidates?.[0]?.content?.parts||[];
-  for(const part of parts){const inline=part.inlineData||part.inline_data;if(inline?.mimeType?.startsWith('image/'))return `data:${inline.mimeType};base64,${inline.data}`;}
+  const data=await r.json();
+  // 이미지 추출
+  const parts=data.candidates?.[0]?.content?.parts||data.content?.parts||[];
+  for(const part of parts){
+    const inline=part.inlineData||part.inline_data;
+    if(inline?.mimeType?.startsWith('image/'))return `data:${inline.mimeType};base64,${inline.data}`;
+  }
   throw new Error('Gemini: 이미지 없음');
 }
 
+// GPT Image
 async function genGPTImg(prompt){
   const key=getKey('openai');if(!key)throw new Error('OpenAI 키 필요');
   const r=await fetch('https://api.openai.com/v1/images/generations',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-image-1',prompt:prompt.substring(0,4000),n:1,size:'1536x1024',quality:'low'})});
   const d=await r.json();if(d.error)throw new Error(d.error.message);
-  const b64=d?.data?.[0]?.b64_json;if(b64)return `data:image/png;base64,${b64}`;
-  const url=d?.data?.[0]?.url;if(url)return url;throw new Error('GPT Image: 결과 없음');
+  const b64=d?.data?.[0]?.b64_json;
+  if(b64)return `data:image/png;base64,${b64}`;
+  const url=d?.data?.[0]?.url;if(url)return url;
+  throw new Error('GPT Image: 결과 없음');
 }
 
+// DALL-E 3
 async function genDalle3(prompt){
   const key=getKey('openai');if(!key)throw new Error('OpenAI 키 필요');
   const r=await fetch('https://api.openai.com/v1/images/generations',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'dall-e-3',prompt:prompt.substring(0,4000),n:1,size:'1792x1024',quality:'standard',style:'natural'})});
   const d=await r.json();if(d.error)throw new Error(d.error.message);
-  return d?.data?.[0]?.url||`data:image/png;base64,${d?.data?.[0]?.b64_json}`;
+  const url=d?.data?.[0]?.url;if(url)return url;
+  const b64=d?.data?.[0]?.b64_json;
+  if(b64)return `data:image/png;base64,${b64}`;
+  throw new Error('DALL-E 3: 결과 없음');
 }
 
+// Grok Image (CORS 프록시 체인)
 async function genGrokImg(prompt){
   const key=getKey('xai');if(!key)throw new Error('xAI 키 필요');
+  const apiUrl='https://api.x.ai/v1/images/generations';
   const payload=JSON.stringify({model:'grok-imagine-image',prompt:prompt.substring(0,4000),n:1,aspect_ratio:'16:9',response_format:'url'});
   const hdrs={'Authorization':'Bearer '+key,'Content-Type':'application/json'};
-  const proxies=['https://api.x.ai/v1/images/generations','https://corsproxy.org/?'+encodeURIComponent('https://api.x.ai/v1/images/generations'),'https://corsproxy.io/?'+encodeURIComponent('https://api.x.ai/v1/images/generations')];
+  // 직접 + CORS 프록시 시도
+  const proxies=[
+    apiUrl,
+    'https://corsproxy.org/?'+encodeURIComponent(apiUrl),
+    'https://corsproxy.io/?'+encodeURIComponent(apiUrl),
+  ];
   let d=null,lastErr='';
-  for(const url of proxies){try{const c=new AbortController();const t=setTimeout(()=>c.abort(),90000);const r=await fetch(url,{method:'POST',headers:hdrs,body:payload,signal:c.signal});clearTimeout(t);if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||'Grok '+r.status);}d=await r.json();break;}catch(e){lastErr=e.message;if(e.name==='AbortError'||e.message.includes('Failed to fetch'))continue;throw e;}}
-  if(!d)throw new Error('Grok CORS: '+lastErr);
-  return d?.data?.[0]?.b64_json?`data:image/png;base64,${d.data[0].b64_json}`:d?.data?.[0]?.url||'';
+  for(const url of proxies){
+    try{
+      const controller=new AbortController();
+      const tid=setTimeout(()=>controller.abort(),90000);
+      const r=await fetch(url,{method:'POST',headers:hdrs,body:payload,signal:controller.signal});
+      clearTimeout(tid);
+      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||'Grok '+r.status);}
+      d=await r.json();break;
+    }catch(e){
+      lastErr=e.message;
+      if(e.name==='AbortError'||e.message.includes('Failed to fetch')||e.message.includes('NetworkError'))continue;
+      throw e;
+    }
+  }
+  if(!d)throw new Error('Grok CORS 차단: '+lastErr);
+  const b64=d?.data?.[0]?.b64_json;
+  if(b64)return `data:image/png;base64,${b64}`;
+  const url2=d?.data?.[0]?.url;if(url2)return url2;
+  throw new Error('Grok: 이미지 없음');
 }
 
+// NovelAI
 async function genNAI(prompt){
   const key=getKey('novelai');if(!key)throw new Error('NovelAI 키 필요');
   const r=await fetch('https://image.novelai.net/ai/generate-image',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key,'Origin':'https://novelai.net','Referer':'https://novelai.net/'},body:JSON.stringify({input:`masterpiece, best quality, ${prompt}`,model:'nai-diffusion-4-5-full',action:'generate',parameters:{params_version:3,width:1216,height:832,n_samples:1,sampler:'k_dpmpp_2m_sde',steps:28,scale:5.3,uncond_scale:1,cfg_rescale:0,noise_schedule:'karras',autoSmea:true,qualityToggle:true,ucPreset:0,legacy:false,legacy_v3_extend:false,add_original_image:true,prefer_brownian:true,deliberate_euler_ancestral_bug:false,v4_model_preset:'Illustrative',negative_prompt:'worst quality, bad quality, lowres, text, watermark',seed:Math.floor(Math.random()*4294967295),v4_prompt:{caption:{base_caption:`masterpiece, best quality, ${prompt}`,char_captions:[]},use_coords:false,use_order:true},v4_negative_prompt:{caption:{base_caption:'worst quality, bad quality, lowres, text, watermark',char_captions:[]},use_coords:false,use_order:false,legacy_uc:false},characterPrompts:[],reference_image_multiple:[],reference_information_extracted_multiple:[],reference_strength_multiple:[]}})});
   if(!r.ok)throw new Error('NAI '+r.status);
   const zip=await JSZip.loadAsync(await r.arrayBuffer());
   const fnames=Object.keys(zip.files);
-  if(fnames.length>0){const blob=await zip.files[fnames[0]].async('blob');return URL.createObjectURL(new Blob([blob],{type:'image/png'}));}
+  if(fnames.length>0){
+    const blob=await zip.files[fnames[0]].async('blob');
+    return URL.createObjectURL(new Blob([blob],{type:'image/png'}));
+  }
   throw new Error('NAI: 이미지 없음');
 }
 
-function showImgModal(src){
+function showImgModal(src,eng){
   const m=document.createElement('div');m.className='img-modal';
-  m.innerHTML=`<img src="${src}"><div class="img-modal-bar"><button class="img-modal-btn" onclick="event.stopPropagation();downloadImg('${src}')">💾 저장</button><button class="img-modal-btn" onclick="event.stopPropagation();copyImgToClip(this.closest('.img-modal').querySelector('img'))">📋 복사</button><button class="img-modal-btn" onclick="this.closest('.img-modal').remove()">✕</button></div>`;
-  m.addEventListener('click',e=>{if(e.target===m)m.remove();});document.body.appendChild(m);
+  m.innerHTML=`<img src="${src}"><div class="img-modal-bar"><button class="img-modal-btn" onclick="event.stopPropagation();downloadImg('${eng}')">💾 저장</button><button class="img-modal-btn" onclick="event.stopPropagation();copyImgToClip(this.closest('.img-modal').querySelector('img'))">📋 복사</button><button class="img-modal-btn" onclick="this.closest('.img-modal').remove()">✕ 닫기</button></div>`;
+  m.addEventListener('click',e=>{if(e.target===m)m.remove();});
+  document.body.appendChild(m);
 }
 
-function downloadImg(src,fn){
-  let filename=fn||'soap_image.png';
+function downloadImg(engOrSrc,fn){
+  // engOrSrc가 data:나 http로 시작하면 직접 src, 아니면 엔진명으로 찾기
+  let src=engOrSrc,filename=fn||'soap_image.png';
+  if(!engOrSrc.startsWith('data:')&&!engOrSrc.startsWith('http')&&!engOrSrc.startsWith('blob:')){
+    const el=document.getElementById('img_'+engOrSrc);
+    if(el){src=el.querySelector('img')?.src||'';filename='soap_'+engOrSrc+'.png';}
+  }
+  if(!src)return;
+  // blob 변환 후 다운로드 (data URI도 안전하게 처리)
   if(src.startsWith('data:')){
-    const [header,b64]=src.split(',');const mime=header.match(/data:(.*?);/)?.[1]||'image/png';
-    const bin=atob(b64);const arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
-    const blob=new Blob([arr],{type:mime});const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
-  }else{const a=document.createElement('a');a.href=src;a.download=filename;document.body.appendChild(a);a.click();a.remove();}
-  showToast('💾 저장!');
+    const [header,b64]=src.split(',');
+    const mime=header.match(/data:(.*?);/)?.[1]||'image/png';
+    const bin=atob(b64);const arr=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+    const blob=new Blob([arr],{type:mime});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=filename;
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  } else {
+    const a=document.createElement('a');a.href=src;a.download=filename;
+    document.body.appendChild(a);a.click();a.remove();
+  }
+  showToast('💾 이미지 저장됨!');
 }
 
 async function copyImgToClip(imgEl){
-  try{const r=await fetch(imgEl.src);const blob=await r.blob();await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);showToast('📋 복사!');}
-  catch(e){showToast('⚠️ 복사 실패');}
+  try{
+    const r=await fetch(imgEl.src);
+    const blob=await r.blob();
+    await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+    showToast('📋 이미지 클립보드에 복사!');
+  }catch(e){showToast('⚠️ 복사 실패 — 저장 버튼 사용');}
 }
 
 // ===== INPUT TABS =====
@@ -1167,9 +1077,9 @@ function updateRecTimer(){recSeconds++;document.getElementById('recTimer').textC
 
 async function toggleRecord(){if(isRecording)stopRecording();else startRecording();}
 async function startRecording(){
-  const sttEng=document.getElementById('sttEngine')?.value||'groq-turbo';
+  const sttEng=document.getElementById('sttEngine')?.value||'openai';
   const needKey=sttEng.startsWith('groq')?'groq':'openai';
-  if(!getKey(needKey)){showToast('⚠️ '+(needKey==='groq'?'Groq':'OpenAI')+' Key 필요');return;}
+  if(!getKey(needKey)){showToast('⚠️ '+(needKey==='groq'?'Groq':'OpenAI')+' API Key 필요');return;}
   try{
     const stream=await navigator.mediaDevices.getUserMedia({audio:{sampleRate:16000,channelCount:1,echoCancellation:true,noiseSuppression:true}});
     const mimes=['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4','audio/mpeg'];
@@ -1182,7 +1092,8 @@ async function startRecording(){
       const blob=new Blob(audioChunks,{type:mediaRecorder.mimeType||'audio/webm'});
       let ext='webm';const am=mediaRecorder.mimeType||'';
       if(am.includes('mp4'))ext='mp4';else if(am.includes('ogg'))ext='ogg';
-      runWhisper(blob,'recording.'+ext,'sttPipe1','stt1a','stt1b',document.getElementById('sttEngine')?.value||'openai');
+      const sttEng=document.getElementById('sttEngine')?.value||'openai';
+      runWhisper(blob,'recording.'+ext,'sttPipe1','stt1a','stt1b',sttEng);
     };
     mediaRecorder.start(1000);isRecording=true;recSeconds=0;
     document.getElementById('recBtn').classList.add('recording');
@@ -1201,48 +1112,79 @@ function stopRecording(){
 
 async function handleFileUpload(e){
   const file=e.target.files[0];if(!file)return;
-  const sttEng=document.getElementById('sttEngine2')?.value||'groq-turbo';
+  const sttEng=document.getElementById('sttEngine2')?.value||'openai';
   const needKey=sttEng.startsWith('groq')?'groq':'openai';
   if(!getKey(needKey)){showToast('⚠️ '+(needKey==='groq'?'Groq':'OpenAI')+' Key 필요');e.target.value='';return;}
   if(file.size>25*1024*1024){showToast('⚠️ 25MB 초과');e.target.value='';return;}
-  document.getElementById('uploadBox').classList.add('processing');document.getElementById('uploadText').textContent='처리 중: '+file.name;
+  document.getElementById('uploadBox').classList.add('processing');
+  document.getElementById('uploadText').textContent='처리 중: '+file.name;
   await runWhisper(file,file.name,'sttPipe2','stt2a','stt2b',sttEng);
-  document.getElementById('uploadBox').classList.remove('processing');document.getElementById('uploadText').textContent='녹음 파일 선택';e.target.value='';
+  document.getElementById('uploadBox').classList.remove('processing');
+  document.getElementById('uploadText').textContent='녹음 파일 선택';e.target.value='';
 }
 
 async function handleDocUpload(e){
   const file=e.target.files[0];if(!file)return;
-  try{const text=await file.text();if(!text.trim()){showToast('⚠️ 빈 파일');return;}document.getElementById('inputTxt').value=text;switchInput('text');showToast('✅ '+file.name+' 로드');}
-  catch(err){showToast('❌ '+err.message);}finally{e.target.value='';document.getElementById('docUploadText').textContent='텍스트 문서 선택';}
+  try{
+    const text=await file.text();
+    if(!text.trim()){showToast('⚠️ 파일이 비어있습니다');return;}
+    document.getElementById('inputTxt').value=text;
+    switchInput('text');
+    showToast('✅ 문서 로드 완료! ('+file.name+', '+text.length+'자)');
+  }catch(err){showToast('❌ 파일 읽기 실패: '+err.message);}
+  finally{e.target.value='';document.getElementById('docUploadText').textContent='텍스트 문서 선택';}
 }
 
-// ===== MRI/CT =====
-let medImages = [];
+// ===== MRI/CT IMAGE ATTACH =====
+let medImages = []; // [{base64, mimeType, name}]
+
 async function handleMedImgUpload(e){
   const files=Array.from(e.target.files);if(!files.length)return;
   for(const file of files){
     if(file.size>20*1024*1024){showToast('⚠️ '+file.name+' 20MB 초과');continue;}
-    try{const base64=await fileToBase64(file);medImages.push({base64,mimeType:file.type||'image/jpeg',name:file.name});}catch(err){showToast('❌ '+file.name);}
+    try{
+      const base64=await fileToBase64(file);
+      const mime=file.type||'image/jpeg';
+      medImages.push({base64,mimeType:mime,name:file.name});
+    }catch(err){showToast('❌ '+file.name+' 읽기 실패');}
   }
-  renderMedImgPreview();e.target.value='';
+  renderMedImgPreview();
+  e.target.value='';
 }
-function fileToBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=()=>rej(new Error('읽기 실패'));r.readAsDataURL(file);});}
+
+function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onload=()=>resolve(r.result.split(',')[1]);
+    r.onerror=()=>reject(new Error('읽기 실패'));
+    r.readAsDataURL(file);
+  });
+}
+
 function renderMedImgPreview(){
-  document.getElementById('medImgPreview').innerHTML=medImages.map((img,i)=>`
+  const div=document.getElementById('medImgPreview');
+  div.innerHTML=medImages.map((img,i)=>`
     <div style="position:relative;width:80px;height:60px;border-radius:4px;overflow:hidden;border:1px solid var(--border)">
       <img src="data:${img.mimeType};base64,${img.base64}" style="width:100%;height:100%;object-fit:cover">
       <div onclick="removeMedImg(${i})" style="position:absolute;top:1px;right:1px;background:rgba(0,0,0,.7);color:#fff;width:16px;height:16px;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer">✕</div>
     </div>`).join('');
-  document.getElementById('imgAttachCount').textContent=medImages.length?medImages.length+'장':'선택사항';
+  document.getElementById('imgAttachCount').textContent=medImages.length?medImages.length+'장 첨부':'미첨부';
   document.getElementById('imgAttachCount').style.color=medImages.length?'var(--green)':'var(--dim)';
 }
+
 function removeMedImg(i){medImages.splice(i,1);renderMedImgPreview();}
 
 async function runWhisper(blob,filename,pipeId,s1Id,s2Id,sttEng){
-  sttEng=sttEng||'openai';const isGroq=sttEng.startsWith('groq');
+  sttEng=sttEng||'openai';
+  const isGroq=sttEng.startsWith('groq');
   const key=isGroq?getKey('groq'):getKey('openai');
   const pipe=document.getElementById(pipeId),s1=document.getElementById(s1Id),s2=document.getElementById(s2Id);
-  const sttConfig={'openai':{url:'https://api.openai.com/v1/audio/transcriptions',model:'whisper-1',label:'OpenAI Whisper'},'groq-turbo':{url:'https://api.groq.com/openai/v1/audio/transcriptions',model:'whisper-large-v3-turbo',label:'Groq Turbo'},'groq-v3':{url:'https://api.groq.com/openai/v1/audio/transcriptions',model:'whisper-large-v3',label:'Groq V3'},'openai-mini':{url:'https://api.openai.com/v1/audio/transcriptions',model:'gpt-4o-mini-transcribe',label:'GPT-4o Mini'},'openai-4o':{url:'https://api.openai.com/v1/audio/transcriptions',model:'gpt-4o-transcribe',label:'GPT-4o Transcribe'}};
+  // STT 엔진별 설정
+  const sttConfig={
+    'openai':{url:'https://api.openai.com/v1/audio/transcriptions',model:'whisper-1',label:'OpenAI Whisper'},
+    'groq-turbo':{url:'https://api.groq.com/openai/v1/audio/transcriptions',model:'whisper-large-v3-turbo',label:'Groq Whisper Turbo'},
+    'groq-v3':{url:'https://api.groq.com/openai/v1/audio/transcriptions',model:'whisper-large-v3',label:'Groq Whisper V3'},
+  };
   const cfg=sttConfig[sttEng]||sttConfig['openai'];
   pipe.classList.add('show');s1.className='stt-step active';s2.className='stt-step';
   s1.querySelector('.stt-dot').nextSibling.textContent=cfg.label+' 처리 중...';
@@ -1256,7 +1198,8 @@ async function runWhisper(blob,filename,pipeId,s1Id,s2Id,sttEng){
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(cfg.label+': '+(e.error?.message||r.statusText));}
     const transcript=await r.text();s1.className='stt-step done';s2.className='stt-step done';
     document.getElementById('inputTxt').value=transcript;switchInput('text');
-    navigator.clipboard.writeText(transcript).catch(()=>{});showToast('✅ '+cfg.label+' 완료!');
+    navigator.clipboard.writeText(transcript).catch(()=>{});
+    showToast('✅ '+cfg.label+' 음성인식 완료!');
   }catch(err){showToast('❌ '+err.message);s1.className='stt-step';s2.className='stt-step';}
   finally{document.getElementById('recBtn')?.classList.remove('processing');document.getElementById('recLabel').textContent='탭하여 녹음 시작';}
 }
