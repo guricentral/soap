@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>구리센트럴 비누제조기 v23 | SOAP Maker</title>
+<title>구리센트럴 비누제조기 v24 | SOAP Maker</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
 :root{
@@ -159,7 +159,7 @@ textarea::placeholder{color:var(--dim)}
 <body>
 <div class="wrap">
 <div class="hdr">
-  <h1>🧼 구리센트럴 <span>비누제조기</span> <span style="font-size:11px;color:var(--dim);font-weight:400">v23</span></h1>
+  <h1>🧼 구리센트럴 <span>비누제조기</span> <span style="font-size:11px;color:var(--dim);font-weight:400">v24</span></h1>
   <p class="sub">음성·텍스트·문서·영상자료 등 다양한 입력 → Multi-AI SOAP 자동 작성 · 의료 이미지 생성 · MRI/CT 분석 반영</p>
 </div>
 
@@ -174,8 +174,9 @@ textarea::placeholder{color:var(--dim)}
       💡 <b>API 키란?</b> AI 서비스를 사용하기 위한 비밀번호예요.<br>
       각 AI 회사 홈페이지에서 무료/유료 키를 발급받아 아래에 입력하세요.<br>
       <span style="color:var(--green)">✓ 한 번 입력하면 브라우저에 저장되어 매번 입력할 필요 없어요.</span><br>
-      <span style="color:var(--dim)">• 음성인식(녹음)을 사용하려면 <b>OpenAI 키</b> 또는 <b>Groq 키</b>가 필요합니다.</span><br>
-      <span style="color:var(--dim)">• Groq Whisper는 초고속 무료 음성인식! Groq 키만으로도 녹음 가능.</span><br>
+      <span style="color:var(--dim)">• 음성인식(녹음)을 사용하려면 <b>Groq 키</b>(추천, 무료!) 또는 <b>OpenAI 키</b>가 필요합니다.</span><br>
+      <span style="color:var(--dim)">• Groq Whisper Turbo = 초고속 무료 음성인식! 기본 선택됨.</span><br>
+      <span style="color:var(--dim)">• 🧠 진료과별 의학용어 사전이 자동 적용되어 음성인식 정확도가 향상됩니다.</span><br>
       <span style="color:var(--dim)">• 나머지는 사용할 AI만 입력하면 됩니다. 전부 입력할 필요 없어요.</span>
     </div>
     <div class="api-wrap" id="apiWrap"></div>
@@ -396,9 +397,11 @@ MRI 찍고 가바펜틴 시작하려고 함.
       <div style="display:flex;align-items:center;gap:4px;justify-content:center;margin-bottom:6px">
         <span style="font-size:10px;color:var(--dim)">🎤 STT 엔진:</span>
         <select class="api-inp" id="sttEngine" style="width:auto;font-size:10px;padding:4px 8px">
-          <option value="openai" selected>🤖 OpenAI Whisper (기본)</option>
-          <option value="groq-turbo">🚀 Groq Whisper Turbo (초고속)</option>
+          <option value="groq-turbo" selected>🚀 Groq Whisper Turbo (초고속·추천)</option>
           <option value="groq-v3">🚀 Groq Whisper V3 (고정밀)</option>
+          <option value="openai">🤖 OpenAI Whisper</option>
+          <option value="gpt4o-mini">🤖 GPT-4o Mini Transcribe</option>
+          <option value="gpt4o">🤖 GPT-4o Transcribe (화자분리)</option>
         </select>
       </div>
       <div class="rec-zone">
@@ -415,9 +418,11 @@ MRI 찍고 가바펜틴 시작하려고 함.
       <div style="display:flex;align-items:center;gap:4px;justify-content:center;margin-bottom:6px">
         <span style="font-size:10px;color:var(--dim)">🎤 STT 엔진:</span>
         <select class="api-inp" id="sttEngine2" style="width:auto;font-size:10px;padding:4px 8px">
-          <option value="openai" selected>🤖 OpenAI Whisper (기본)</option>
-          <option value="groq-turbo">🚀 Groq Whisper Turbo (초고속)</option>
+          <option value="groq-turbo" selected>🚀 Groq Whisper Turbo (초고속·추천)</option>
           <option value="groq-v3">🚀 Groq Whisper V3 (고정밀)</option>
+          <option value="openai">🤖 OpenAI Whisper</option>
+          <option value="gpt4o-mini">🤖 GPT-4o Mini Transcribe</option>
+          <option value="gpt4o">🤖 GPT-4o Transcribe (화자분리)</option>
         </select>
       </div>
       <div class="upload-box" id="uploadBox" onclick="document.getElementById('audioFile').click()">
@@ -493,6 +498,44 @@ MRI 찍고 가바펜틴 시작하려고 함.
 <div class="toast" id="toast"></div>
 
 <script>
+// ===== STT MEDICAL VOCABULARY =====
+const STT_VOCAB = {
+  '신경외과': '신경외과 진료실 의사-환자 대화 녹음. 허리디스크, 목디스크, 척추관협착증, 추간판탈출증, 경추, 흉추, 요추, 천추, L3-4, L4-5, L5-S1, C5-6, C6-7, HIVD, HNP, spinal stenosis, spondylolisthesis, 전방전위증, 후종인대골화증, OPLL, 척수병증, myelopathy, radiculopathy, 방사통, 하지방사통, 상지방사통, 저림, 마비, 감각저하, 근력약화, 보행장애, 간헐적 파행, neurogenic claudication, SLR test, 하지직거상검사, Spurling test, VAS, NRS, 통증점수, MRI, CT, X-ray, EMG, 근전도검사, 신경전도검사, 골밀도검사, DEXA, TLIF, PLIF, ALIF, laminectomy, 추궁판절제술, discectomy, 추간판제거술, foraminotomy, 추간공확장술, fusion, 유합술, 고정술, pedicle screw, 나사못고정, cage, 인공디스크, 미세현미경수술, 내시경수술, 최소침습수술, MIS, 경막외주사, 신경차단술, epidural, nerve block, 경막외 신경차단술, 선택적 신경근차단술, SNRB, 가바펜틴, 프레가발린, 리리카, 뉴론틴, 트라마돌, 울트라셋, 타이레놀, 아세트아미노펜, 낙센, 나프록센, 셀레콕시브, 세레콕스, 에토리콕시브, 덱사메타손, 메틸프레드니솔론, 근이완제, 물리치료, 도수치료, 체외충격파, ESWT, 견인치료, ICT, TENS, 핫팩, 프롤로테라피, 보조기, 코르셋, 안녕하세요, 어디가 불편하세요, 언제부터, 어느쪽, 오른쪽, 왼쪽, 양쪽, 악화, 호전, 재발',
+  '정형외과': '정형외과 진료실 의사-환자 대화 녹음. 골절, fracture, 인대파열, 반월판, 연골손상, 십자인대, ACL, PCL, 회전근개, rotator cuff, 오십견, 관절염, 류마티스, 퇴행성관절염, 인공관절, TKR, THR, 관절경, 석고붕대, 깁스, 부목, 골다공증, 척추압박골절, 어깨, 무릎, 고관절, 발목, 손목, 팔꿈치',
+  '가정의학과': '가정의학과 진료실 의사-환자 대화 녹음. 고혈압, 당뇨병, 고지혈증, 이상지질혈증, 건강검진, 종합검진, 혈압, 혈당, 콜레스테롤, HbA1c, 당화혈색소, BMI, 비만, 체중감량, 금연, 예방접종, 독감, 코로나, 갑상선, 간기능검사, 신장기능, 소변검사, 대변검사, 위내시경, 대장내시경, 암검진, 메트포르민, 아토르바스타틴, 암로디핀, 로사르탄, 요양병원, 재활, 와상환자, 욕창, ADL, 일상생활동작, 식이요법, 운동처방',
+  '내과': '내과 진료실 의사-환자 대화 녹음. 고혈압, 당뇨병, 고지혈증, 심부전, 부정맥, 협심증, 심근경색, 폐렴, 천식, COPD, 간경변, 간염, 신부전, 투석, 갑상선기능항진증, 갑상선기능저하증, 위염, 위궤양, 역류성식도염, 크론병, 궤양성대장염, 빈혈, 혈소판감소, 백혈구',
+  '마취통증의학과': '마취통증의학과 진료실 의사-환자 대화 녹음. 전신마취, 척추마취, 경막외마취, 신경차단술, epidural, nerve block, PCA, 통증클리닉, 만성통증, 복합부위통증증후군, CRPS, 대상포진후신경통, VAS, NRS, 트리거포인트, 고주파열응고술, radiofrequency, 경추부, 요추부, 성상신경절차단',
+  '영상의학과': '영상의학과 판독 녹음. MRI, CT, X-ray, 초음파, ultrasound, 조영제, gadolinium, enhancement, signal intensity, T1, T2, STIR, FLAIR, diffusion, disc bulging, protrusion, extrusion, sequestration, foraminal stenosis, central stenosis, lateral recess stenosis, cord compression, myelopathy signal, endplate change, Modic change, facet arthropathy, ligamentum flavum hypertrophy, 종양, metastasis, 전이, 골절, compression fracture',
+  'default': '병원 진료실 의사-환자 대화 녹음. 증상, 통증, 약, 처방, 검사, 수술, 입원, 외래, 경과관찰, 재진, 초진, 의뢰, 전원, 안녕하세요, 어디가 불편하세요, 언제부터, 어느쪽, 오른쪽, 왼쪽, 양쪽, 악화, 호전, 재발, VAS, MRI, CT, X-ray, 혈액검사'
+};
+
+function buildSttPrompt(){
+  const dept = (document.getElementById('pf-dept')?.value?.trim()) || '';
+  const spec = (document.getElementById('pf-specialty')?.value?.trim()) || '';
+  // 진료과에 맞는 용어 사전 선택
+  let vocab = STT_VOCAB['default'];
+  for(const [key, val] of Object.entries(STT_VOCAB)){
+    if(key !== 'default' && dept.includes(key)){
+      vocab = val; break;
+    }
+  }
+  // 구비약물/약제 정보에서 약품명 추출하여 추가
+  const meds = document.getElementById('pf-meds')?.value?.trim() || '';
+  const stockmeds = document.getElementById('pf-stockmeds')?.value?.trim() || '';
+  const extraTerms = (meds + ' ' + stockmeds)
+    .replace(/[\[\](){}•·\-=:]/g, ' ')
+    .split(/[\n,\t]+/)
+    .map(s => s.trim())
+    .filter(s => s.length > 1 && s.length < 30)
+    .slice(0, 50)
+    .join(', ');
+  let prompt = vocab;
+  if(extraTerms) prompt += ', ' + extraTerms;
+  if(spec && !prompt.includes(spec)) prompt += ', ' + spec;
+  // Whisper prompt는 244토큰 제한이므로 안전하게 자름
+  return prompt.substring(0, 800);
+}
+
 // ===== PROVIDERS =====
 const PROVIDERS = {
   cerebras:{name:'⚡ Cerebras',color:'cerebras',apiType:'openai',baseUrl:'https://api.cerebras.ai/v1',keyId:'cerebras',models:[
@@ -1077,7 +1120,7 @@ function updateRecTimer(){recSeconds++;document.getElementById('recTimer').textC
 
 async function toggleRecord(){if(isRecording)stopRecording();else startRecording();}
 async function startRecording(){
-  const sttEng=document.getElementById('sttEngine')?.value||'openai';
+  const sttEng=document.getElementById('sttEngine')?.value||'groq-turbo';
   const needKey=sttEng.startsWith('groq')?'groq':'openai';
   if(!getKey(needKey)){showToast('⚠️ '+(needKey==='groq'?'Groq':'OpenAI')+' API Key 필요');return;}
   try{
@@ -1092,7 +1135,7 @@ async function startRecording(){
       const blob=new Blob(audioChunks,{type:mediaRecorder.mimeType||'audio/webm'});
       let ext='webm';const am=mediaRecorder.mimeType||'';
       if(am.includes('mp4'))ext='mp4';else if(am.includes('ogg'))ext='ogg';
-      const sttEng=document.getElementById('sttEngine')?.value||'openai';
+      const sttEng=document.getElementById('sttEngine')?.value||'groq-turbo';
       runWhisper(blob,'recording.'+ext,'sttPipe1','stt1a','stt1b',sttEng);
     };
     mediaRecorder.start(1000);isRecording=true;recSeconds=0;
@@ -1112,7 +1155,7 @@ function stopRecording(){
 
 async function handleFileUpload(e){
   const file=e.target.files[0];if(!file)return;
-  const sttEng=document.getElementById('sttEngine2')?.value||'openai';
+  const sttEng=document.getElementById('sttEngine2')?.value||'groq-turbo';
   const needKey=sttEng.startsWith('groq')?'groq':'openai';
   if(!getKey(needKey)){showToast('⚠️ '+(needKey==='groq'?'Groq':'OpenAI')+' Key 필요');e.target.value='';return;}
   if(file.size>25*1024*1024){showToast('⚠️ 25MB 초과');e.target.value='';return;}
@@ -1175,17 +1218,20 @@ function renderMedImgPreview(){
 function removeMedImg(i){medImages.splice(i,1);renderMedImgPreview();}
 
 async function runWhisper(blob,filename,pipeId,s1Id,s2Id,sttEng){
-  sttEng=sttEng||'openai';
+  sttEng=sttEng||'groq-turbo';
   const isGroq=sttEng.startsWith('groq');
-  const key=isGroq?getKey('groq'):getKey('openai');
+  const isGpt4o=sttEng.startsWith('gpt4o');
+  const key=(isGroq?getKey('groq'):getKey('openai'));
   const pipe=document.getElementById(pipeId),s1=document.getElementById(s1Id),s2=document.getElementById(s2Id);
   // STT 엔진별 설정
   const sttConfig={
     'openai':{url:'https://api.openai.com/v1/audio/transcriptions',model:'whisper-1',label:'OpenAI Whisper'},
     'groq-turbo':{url:'https://api.groq.com/openai/v1/audio/transcriptions',model:'whisper-large-v3-turbo',label:'Groq Whisper Turbo'},
     'groq-v3':{url:'https://api.groq.com/openai/v1/audio/transcriptions',model:'whisper-large-v3',label:'Groq Whisper V3'},
+    'gpt4o-mini':{url:'https://api.openai.com/v1/audio/transcriptions',model:'gpt-4o-mini-transcribe',label:'GPT-4o Mini Transcribe'},
+    'gpt4o':{url:'https://api.openai.com/v1/audio/transcriptions',model:'gpt-4o-transcribe',label:'GPT-4o Transcribe'},
   };
-  const cfg=sttConfig[sttEng]||sttConfig['openai'];
+  const cfg=sttConfig[sttEng]||sttConfig['groq-turbo'];
   pipe.classList.add('show');s1.className='stt-step active';s2.className='stt-step';
   s1.querySelector('.stt-dot').nextSibling.textContent=cfg.label+' 처리 중...';
   try{
@@ -1194,6 +1240,9 @@ async function runWhisper(blob,filename,pipeId,s1Id,s2Id,sttEng){
     let sendBlob=blob,sendName=filename;
     if(!ok.includes(ext)){try{sendBlob=await convertToWav(blob);sendName='recording.wav';}catch(e){sendName=filename.replace(/\.[^.]+$/,'.mp4');}}
     const fd=new FormData();fd.append('file',sendBlob,sendName);fd.append('model',cfg.model);fd.append('language','ko');fd.append('response_format','text');
+    // 의학용어 프롬프트 주입 (음성인식 정확도 향상)
+    const sttPrompt=buildSttPrompt();
+    if(sttPrompt) fd.append('prompt',sttPrompt);
     const r=await fetch(cfg.url,{method:'POST',headers:{'Authorization':'Bearer '+key},body:fd});
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(cfg.label+': '+(e.error?.message||r.statusText));}
     const transcript=await r.text();s1.className='stt-step done';s2.className='stt-step done';
@@ -1224,3 +1273,4 @@ init();
 </script>
 </body>
 </html>
+
