@@ -735,15 +735,15 @@ function saveKey(id,val){
 function renderModels(){
   document.getElementById('modelList').innerHTML=Object.entries(PROVIDERS).map(([k,p])=>`
     <div class="provider prov-${p.color}"><div class="prov-hdr" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'flex':'none'"><span>${p.name}</span><span class="cnt">${p.models.length}</span></div>
-    <div class="prov-body">${p.models.map(m=>`<label class="model-cb" data-pid="${k}" data-mid="${m.id}"><input type="checkbox" value="${m.id}" onchange="updCount()">${m.name}${m.tag?`<span class="tag tag-${m.tag}">${m.tag==='best'?'★':m.tag==='hot'?'🔥':m.tag==='fast'?'⚡':'NEW'}</span>`:''}</label>`).join('')}</div></div>`).join('');
+    <div class="prov-body">${p.models.map(m=>`<label class="model-cb" data-pid="${k}" data-mid="${m.id}" onclick="event.preventDefault();const cb=this.querySelector('input');cb.checked=!cb.checked;this.classList.toggle('sel',cb.checked);updCount()"><input type="checkbox" value="${m.id}">${m.name}${m.tag?`<span class="tag tag-${m.tag}">${m.tag==='best'?'★':m.tag==='hot'?'🔥':m.tag==='fast'?'⚡':'NEW'}</span>`:''}</label>`).join('')}</div></div>`).join('');
   updCount();
 }
 
 function updCount(){document.getElementById('selCnt').textContent=document.querySelectorAll('.model-cb input:checked').length;}
-function selAll(){document.querySelectorAll('.model-cb input').forEach(c=>c.checked=true);updCount();}
-function selNone(){document.querySelectorAll('.model-cb input').forEach(c=>c.checked=false);updCount();}
-function selBest(){selNone();document.querySelectorAll('.model-cb').forEach(l=>{if(l.querySelector('.tag-best'))l.querySelector('input').checked=true});updCount();}
-function selFast(){selNone();document.querySelectorAll('.model-cb').forEach(l=>{if(l.querySelector('.tag-fast'))l.querySelector('input').checked=true});updCount();}
+function selAll(){document.querySelectorAll('.model-cb').forEach(l=>{l.querySelector('input').checked=true;l.classList.add('sel')});updCount();}
+function selNone(){document.querySelectorAll('.model-cb').forEach(l=>{l.querySelector('input').checked=false;l.classList.remove('sel')});updCount();}
+function selBest(){selNone();document.querySelectorAll('.model-cb').forEach(l=>{if(l.querySelector('.tag-best')){l.querySelector('input').checked=true;l.classList.add('sel')}});updCount();}
+function selFast(){selNone();document.querySelectorAll('.model-cb').forEach(l=>{if(l.querySelector('.tag-fast')){l.querySelector('input').checked=true;l.classList.add('sel')}});updCount();}
 
 // ===== CUSTOM MODEL =====
 let customModelList = JSON.parse(localStorage.getItem('soap_custom_models')||'[]');
@@ -1369,7 +1369,4 @@ async function runWhisper(blob,filename,pipeId,s1Id,s2Id,sttEng){
 async function convertToWav(blob){
   const ctx=new(window.AudioContext||window.webkitAudioContext)({sampleRate:16000});
   const buf=await ctx.decodeAudioData(await blob.arrayBuffer());
-  const samples=buf.getChannelData(0),wavBuf=new ArrayBuffer(44+samples.length*2),v=new DataView(wavBuf);
-  function ws(o,s){for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));}
-  ws(0,'RIFF');v.setUint32(4,36+samples.length*2,true);ws(8,'WAVE');ws(12,'fmt ');
-  v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint1
+  const samples=buf.getChannelData(0),wavBuf=new ArrayBuffer(44+sampl
