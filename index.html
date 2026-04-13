@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>구리센트럴 비누제조기 v24 | SOAP Maker</title>
+<title>구리센트럴 비누제조기 v25 | SOAP Maker</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
 :root{
@@ -159,7 +159,7 @@ textarea::placeholder{color:var(--dim)}
 <body>
 <div class="wrap">
 <div class="hdr">
-  <h1>🧼 구리센트럴 <span>비누제조기</span> <span style="font-size:11px;color:var(--dim);font-weight:400">v24</span></h1>
+  <h1>🧼 구리센트럴 <span>비누제조기</span> <span style="font-size:11px;color:var(--dim);font-weight:400">v25</span></h1>
   <p class="sub">음성·텍스트·문서·영상자료 등 다양한 입력 → Multi-AI SOAP 자동 작성 · 의료 이미지 생성 · MRI/CT 분석 반영</p>
 </div>
 
@@ -547,7 +547,7 @@ const PROVIDERS = {
   gemini:{name:'💎 Gemini',color:'gemini',apiType:'gemini',baseUrl:'https://generativelanguage.googleapis.com/v1beta',keyId:'gemini',models:[
     {id:'gem31p',name:'Gemini 3.1 Pro',m:'gemini-3.1-pro-preview',tag:'best'},
     {id:'gem3f',name:'Gemini 3 Flash',m:'gemini-3-flash-preview',tag:'hot'},
-    {id:'gem31f',name:'Gemini 3.1 Flash',m:'gemini-3.1-flash-preview',tag:'fast'},
+    {id:'gem31fl',name:'Gemini 3.1 Flash Lite',m:'gemini-3.1-flash-lite-preview',tag:'fast'},
   ]},
   groq:{name:'🚀 Groq',color:'groq',apiType:'openai',baseUrl:'https://api.groq.com/openai/v1',keyId:'groq',models:[
     {id:'grq-gptoss',name:'GPT-OSS 120B (500t/s)',m:'openai/gpt-oss-120b',tag:'best'},
@@ -590,9 +590,106 @@ const apiKeys = {};
 function getKey(id){ return apiKeys[id] || localStorage.getItem('soap_key_'+id) || ''; }
 
 const SOAP_PROMPTS = {
-  brief:`전문의의 진료기록 변환 AI.\n규칙: 최대한 간결. 각 항목 1-2줄. 핵심만.\n출력:\nS: [증상]\nO: [소견]\nA: [진단]\nP: [계획]`,
-  normal:`전문의의 진료기록 변환 AI.\n규칙: S/O 적절 분량. A/P 충실. EMR 최적화.\n출력:\nS: [주관적]\nO: [객관적]\nA: [평가]\nP: [계획]`,
-  detailed:`전문의의 진료기록 변환 AI.\n규칙: S-CC/발병시기/악화완화인자 상세. O-이학적검사/영상 상세. A-감별진단+ICD코드. P-약물용량/시술/f/u일정 구체적.\n출력:\nS: [상세]\nO: [상세]\nA: [감별포함]\nP: [구체적]`
+  brief:`You are a medical documentation AI for a specialist physician.
+
+RULES:
+- S: CC (1 line) + key HPI facts only. No redundant narrative.
+- O: PE findings + imaging summary. Numbers only, no prose.
+- A: Primary dx + key differential. ICD code if clear.
+- P: Action items only. Drug name+dose or procedure name.
+- Use medical abbreviations. No duplication between S/O/A/P.
+- Write what supports the Assessment — omit irrelevant chatter.
+
+OUTPUT:
+S: [CC + focused HPI]
+O: [PE + labs/imaging]
+A: [Dx]
+P: [Plan]`,
+
+  normal:`You are a medical documentation AI for a specialist physician.
+Convert the consultation transcript into a structured SOAP note as if presenting a case at a medical conference.
+
+RULES FOR S (Subjective):
+- Start with CC: Chief Complaint in 1 line (symptom + duration + laterality)
+- Then HPI: Structured history — onset, progression, aggravating/alleviating factors, associated symptoms, prior treatments and their outcomes
+- Organize HPI to build logical evidence toward the Assessment (dx). Highlight classic/pathognomonic findings.
+- PMHx/PSHx: Prior surgeries, relevant medical history — concise, separate from HPI
+- Omit social pleasantries, repeated phrases, off-topic conversation. Extract the clinical signal from the noise.
+- Do NOT repeat the same fact in both Korean and English. Use English medical terms with Korean context sparingly.
+
+RULES FOR O (Objective):
+- PE: Specific exam findings with laterality and grading (e.g., "Grip strength Rt 4/5, Lt 5/5")
+- Imaging/Labs: Summarize key findings. Reference prior studies with dates if mentioned.
+- Do NOT restate what is already in S.
+
+RULES FOR A (Assessment):
+- Primary diagnosis first, then differentials ranked by likelihood
+- Connect back to S/O evidence (e.g., "Progressive Rt UE weakness with fine motor deficit → r/o cervical myelopathy vs CVA")
+- ICD-10 codes when diagnosis is clear
+
+RULES FOR P (Plan):
+- Specific: drug name + dose + frequency, procedure name, imaging order
+- Include f/u timeline, patient education points, referrals
+- Distinguish between covered (insurance) vs uncovered items if info available
+
+GENERAL:
+- EMR-optimized format. Concise but complete.
+- No filler phrases. No "환자분께서는..." style padding.
+- If English medical term is used, do NOT add Korean translation next to it (no duplication).
+
+OUTPUT:
+S: [CC + HPI + PMHx]
+O: [PE + Imaging/Labs]
+A: [Dx + DDx with reasoning]
+P: [Specific plan]`,
+
+  detailed:`You are a medical documentation AI for a specialist physician.
+Convert the consultation transcript into a SOAP note suitable for case presentation at a national medical conference or grand rounds.
+
+RULES FOR S (Subjective):
+- CC: Chief Complaint — single line: "symptom, laterality, duration" (e.g., "Rt upper extremity weakness, progressive, 1 month")
+- HPI (History of Present Illness):
+  * Chronological narrative highlighting pathognomonic features
+  * Onset → progression → current severity → functional impact
+  * Aggravating/alleviating factors
+  * Associated symptoms (positive AND pertinent negatives)
+  * Prior treatments: what was tried, response to each
+  * Red flags if present (bladder/bowel dysfunction, rapidly progressive weakness, etc.)
+- PMHx: Prior surgeries with dates/surgeon if mentioned, medical conditions, medications
+- The S section must read as a compelling clinical story that logically leads to the Assessment.
+- Strip all non-clinical content (greetings, insurance discussion, scheduling).
+
+RULES FOR O (Objective):
+- Vital signs if mentioned
+- Neurological exam: motor (MRC grading by myotome), sensory (dermatome), reflexes, special tests (SLR, Spurling, Hoffman, Babinski)
+- MSK exam: ROM, tenderness, gait pattern
+- Imaging: modality + date + key findings with levels (e.g., "MRI C-spine (2022): No significant stenosis or HNP at any level")
+- Labs: relevant values with reference ranges
+
+RULES FOR A (Assessment):
+- Primary diagnosis with supporting evidence from S and O
+- Differential diagnoses ranked by probability with brief rationale
+- Risk stratification if applicable
+- ICD-10 codes
+
+RULES FOR P (Plan):
+- Diagnostic: specific imaging/labs ordered with indication
+- Therapeutic: drug name + dose + route + frequency + duration
+- Procedural: procedure name + target level/site
+- Disposition: f/u interval, precautions, return criteria
+- Patient education: what was explained, informed consent discussion
+- Cost information if discussed (insurance vs out-of-pocket)
+
+GENERAL:
+- No English-Korean duplication. Pick one language per term.
+- No "환자분께서" or polite padding. Direct clinical language.
+- Every sentence in S must serve the Assessment. If it doesn't support a diagnosis, cut it.
+
+OUTPUT:
+S: [CC + detailed HPI + PMHx/PSHx]
+O: [Full PE + Imaging + Labs]
+A: [Primary Dx + DDx with evidence-based reasoning + ICD-10]
+P: [Diagnostic + Therapeutic + Procedural + Disposition]`
 };
 
 // ===== INIT =====
@@ -1273,4 +1370,3 @@ init();
 </script>
 </body>
 </html>
-
