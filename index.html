@@ -917,7 +917,9 @@ async function callAPI(provKey,modelInfo,inputText,detailLevel,langMode){
     }
     parts.push({text:userMsg});
     const r=await fetch(`${prov.baseUrl}/models/${modelInfo.m}:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:sysPrompt}]},contents:[{parts}]})});
-    const d=await r.json();if(d.error)throw new Error(d.error.message);return d.candidates[0].content.parts[0].text;
+    const d=await r.json();if(d.error)throw new Error(d.error.message);
+    if(!d.candidates||!d.candidates.length)throw new Error('Gemini 응답 없음 (candidates empty)');
+    return d.candidates[0].content.parts[0].text;
 
   } else {
     // OpenAI-compatible: GPT-5.4/Grok 등 vision 지원
@@ -949,10 +951,21 @@ async function callAPI(provKey,modelInfo,inputText,detailLevel,langMode){
       messages[0].content+='\n\nIMPORTANT: Do NOT use <think> tags. Respond with the SOAP note directly.';
     }
     const r=await fetch(`${prov.baseUrl}/chat/completions`,{method:'POST',headers:hdrs,body:JSON.stringify(body)});
-    const d=await r.json();if(d.error)throw new Error(d.error.message||JSON.stringify(d.error));
+    const d=await r.json();
+    if(d.error)throw new Error(d.error.message||JSON.stringify(d.error));
+    // 응답 안전 파싱 (choices가 없거나 빈 경우 대응)
+    if(!d.choices||!d.choices.length) throw new Error('AI 응답 없음 (choices empty). 모델이 응답을 거부했거나 rate limit일 수 있습니다.');
+    const msg=d.choices[0].message;
+    if(!msg) throw new Error('AI 메시지 없음 (message null)');
+    let result=msg.content||'';
     // <think> 태그 제거 (reasoning 모델 대응)
-    let result=d.choices[0].message.content||'';
     result=result.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
+    if(!result){
+      // content가 비어있으면 reasoning_content 확인 (일부 모델은 여기에 넣음)
+      const rc=msg.reasoning_content||msg.reasoning||'';
+      if(rc) result='[Reasoning only — SOAP 없음. reasoning_effort 설정 확인 필요]\n'+rc.substring(0,500);
+      else throw new Error('AI가 빈 응답을 반환함. 다른 모델을 시도하세요.');
+    }
     return result;
   }
 }
@@ -1359,17 +1372,4 @@ async function convertToWav(blob){
   const samples=buf.getChannelData(0),wavBuf=new ArrayBuffer(44+samples.length*2),v=new DataView(wavBuf);
   function ws(o,s){for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));}
   ws(0,'RIFF');v.setUint32(4,36+samples.length*2,true);ws(8,'WAVE');ws(12,'fmt ');
-  v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,16000,true);
-  v.setUint32(28,32000,true);v.setUint16(32,2,true);v.setUint16(34,16,true);ws(36,'data');
-  v.setUint32(40,samples.length*2,true);
-  for(let i=0;i<samples.length;i++){const s=Math.max(-1,Math.min(1,samples[i]));v.setInt16(44+i*2,s<0?s*0x8000:s*0x7FFF,true);}
-  ctx.close();return new Blob([wavBuf],{type:'audio/wav'});
-}
-
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='Enter')runAll();});
-
-init();
-</script>
-</body>
-</html>
+  v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint1
