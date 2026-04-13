@@ -509,9 +509,12 @@ const STT_VOCAB = {
   'default': '병원 진료실 의사-환자 대화 녹음. 증상, 통증, 약, 처방, 검사, 수술, 입원, 외래, 경과관찰, 재진, 초진, 의뢰, 전원, 안녕하세요, 어디가 불편하세요, 언제부터, 어느쪽, 오른쪽, 왼쪽, 양쪽, 악화, 호전, 재발, VAS, MRI, CT, X-ray, 혈액검사'
 };
 
-function buildSttPrompt(){
+function buildSttPrompt(sttEng){
   const dept = (document.getElementById('pf-dept')?.value?.trim()) || '';
   const spec = (document.getElementById('pf-specialty')?.value?.trim()) || '';
+  const isGroq = sttEng && sttEng.startsWith('groq');
+  // Groq: 224토큰 제한 (한국어≈150자), OpenAI: 244토큰 (≈180자)
+  const maxLen = isGroq ? 300 : 800;
   // 진료과에 맞는 용어 사전 선택
   let vocab = STT_VOCAB['default'];
   for(const [key, val] of Object.entries(STT_VOCAB)){
@@ -519,21 +522,21 @@ function buildSttPrompt(){
       vocab = val; break;
     }
   }
-  // 구비약물/약제 정보에서 약품명 추출하여 추가
-  const meds = document.getElementById('pf-meds')?.value?.trim() || '';
-  const stockmeds = document.getElementById('pf-stockmeds')?.value?.trim() || '';
-  const extraTerms = (meds + ' ' + stockmeds)
-    .replace(/[\[\](){}•·\-=:]/g, ' ')
-    .split(/[\n,\t]+/)
-    .map(s => s.trim())
-    .filter(s => s.length > 1 && s.length < 30)
-    .slice(0, 50)
-    .join(', ');
-  let prompt = vocab;
-  if(extraTerms) prompt += ', ' + extraTerms;
-  if(spec && !prompt.includes(spec)) prompt += ', ' + spec;
-  // Whisper prompt는 244토큰 제한이므로 안전하게 자름
-  return prompt.substring(0, 800);
+  // Groq는 핵심 용어만 (약제 추가 안 함), OpenAI는 약제까지 포함
+  if(!isGroq){
+    const meds = document.getElementById('pf-meds')?.value?.trim() || '';
+    const stockmeds = document.getElementById('pf-stockmeds')?.value?.trim() || '';
+    const extraTerms = (meds + ' ' + stockmeds)
+      .replace(/[\[\](){}•·\-=:]/g, ' ')
+      .split(/[\n,\t]+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 1 && s.length < 30)
+      .slice(0, 50)
+      .join(', ');
+    if(extraTerms) vocab += ', ' + extraTerms;
+  }
+  if(spec && !vocab.includes(spec)) vocab += ', ' + spec;
+  return vocab.substring(0, maxLen);
 }
 
 // ===== PROVIDERS =====
@@ -1338,7 +1341,7 @@ async function runWhisper(blob,filename,pipeId,s1Id,s2Id,sttEng){
     if(!ok.includes(ext)){try{sendBlob=await convertToWav(blob);sendName='recording.wav';}catch(e){sendName=filename.replace(/\.[^.]+$/,'.mp4');}}
     const fd=new FormData();fd.append('file',sendBlob,sendName);fd.append('model',cfg.model);fd.append('language','ko');fd.append('response_format','text');
     // 의학용어 프롬프트 주입 (음성인식 정확도 향상)
-    const sttPrompt=buildSttPrompt();
+    const sttPrompt=buildSttPrompt(sttEng);
     if(sttPrompt) fd.append('prompt',sttPrompt);
     const r=await fetch(cfg.url,{method:'POST',headers:{'Authorization':'Bearer '+key},body:fd});
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(cfg.label+': '+(e.error?.message||r.statusText));}
