@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>구리센트럴 비누제조기 v26 | SOAP Maker</title>
+<title>구리센트럴 비누제조기 v27 | SOAP Maker</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
 :root{
@@ -159,7 +159,7 @@ textarea::placeholder{color:var(--dim)}
 <body>
 <div class="wrap">
 <div class="hdr">
-  <h1>🧼 구리센트럴 <span>비누제조기</span> <span style="font-size:11px;color:var(--dim);font-weight:400">v26</span></h1>
+  <h1>🧼 구리센트럴 <span>비누제조기</span> <span style="font-size:11px;color:var(--dim);font-weight:400">v27</span></h1>
   <p class="sub">음성·텍스트·문서·영상자료 등 다양한 입력 → Multi-AI SOAP 자동 작성 · 의료 이미지 생성 · MRI/CT 분석 반영</p>
 </div>
 
@@ -404,14 +404,27 @@ MRI 찍고 가바펜틴 시작하려고 함.
           <option value="gpt4o">🤖 GPT-4o Transcribe (화자분리)</option>
         </select>
       </div>
+      <div style="display:flex;align-items:center;gap:6px;justify-content:center;margin-bottom:6px;flex-wrap:wrap">
+        <span style="font-size:10px;color:var(--dim)">⏱ 자동종료:</span>
+        <select class="api-inp" id="recAutoStop" style="width:auto;font-size:10px;padding:4px 8px">
+          <option value="180">3분</option>
+          <option value="300" selected>5분 (기본)</option>
+          <option value="420">7분</option>
+          <option value="600">10분</option>
+          <option value="0">끄기 (수동)</option>
+        </select>
+        <label style="display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--green);cursor:pointer"><input type="checkbox" id="autoSoap" checked style="accent-color:var(--green);width:12px;height:12px"> 녹음 끝나면 자동 SOAP</label>
+      </div>
       <div class="rec-zone">
         <div class="rec-btn" id="recBtn" onclick="toggleRecord()"><div class="rec-dot"></div></div>
         <div class="rec-lbl" id="recLabel">탭하여 녹음 시작</div>
         <div class="rec-time" id="recTimer">00:00</div>
+        <div id="autoStopInfo" style="font-size:9px;color:var(--accent);margin-top:2px;display:none"></div>
       </div>
       <div class="stt-pipeline" id="sttPipe1">
         <div class="stt-step" id="stt1a"><div class="stt-dot"></div>음성인식 중...</div>
         <div class="stt-step" id="stt1b"><div class="stt-dot"></div>텍스트 변환 완료</div>
+        <div class="stt-step" id="stt1c"><div class="stt-dot"></div>SOAP 자동 변환 중...</div>
       </div>
     </div>
     <div class="input-pane" id="pane-file">
@@ -745,6 +758,12 @@ function renderModels(){
       this.classList.toggle('sel',cb.checked);
       updCount();
     });
+  });
+  // 기본 선택: Gemini 3.1 Pro
+  const defaultModels=['gem31p'];
+  defaultModels.forEach(mid=>{
+    const label=document.querySelector(`.model-cb[data-mid="${mid}"]`);
+    if(label){label.querySelector('input').checked=true;label.classList.add('sel');}
   });
   updCount();
 }
@@ -1248,8 +1267,19 @@ function switchInput(mode){
 }
 
 // ===== RECORDING =====
-let mediaRecorder=null,audioChunks=[],isRecording=false,recInterval=null,recSeconds=0;
-function updateRecTimer(){recSeconds++;document.getElementById('recTimer').textContent=String(Math.floor(recSeconds/60)).padStart(2,'0')+':'+String(recSeconds%60).padStart(2,'0');}
+let mediaRecorder=null,audioChunks=[],isRecording=false,recInterval=null,recSeconds=0,autoStopTimeout=null;
+function updateRecTimer(){
+  recSeconds++;
+  document.getElementById('recTimer').textContent=String(Math.floor(recSeconds/60)).padStart(2,'0')+':'+String(recSeconds%60).padStart(2,'0');
+  // 자동종료 카운트다운 표시
+  const autoSec=parseInt(document.getElementById('recAutoStop')?.value||'0');
+  if(autoSec>0){
+    const remain=autoSec-recSeconds;
+    const info=document.getElementById('autoStopInfo');
+    if(remain>0&&remain<=30){info.style.display='block';info.textContent=`⏱ ${remain}초 후 자동 종료`;}
+    else if(remain>30){info.style.display='block';info.textContent=`⏱ ${Math.ceil(remain/60)}분 후 자동 종료`;}
+  }
+}
 
 async function toggleRecord(){if(isRecording)stopRecording();else startRecording();}
 async function startRecording(){
@@ -1269,21 +1299,44 @@ async function startRecording(){
       let ext='webm';const am=mediaRecorder.mimeType||'';
       if(am.includes('mp4'))ext='mp4';else if(am.includes('ogg'))ext='ogg';
       const sttEng=document.getElementById('sttEngine')?.value||'groq-turbo';
-      runWhisper(blob,'recording.'+ext,'sttPipe1','stt1a','stt1b',sttEng);
+      const autoSoap=document.getElementById('autoSoap')?.checked;
+      await runWhisper(blob,'recording.'+ext,'sttPipe1','stt1a','stt1b',sttEng);
+      // 자동 SOAP 실행
+      if(autoSoap && document.getElementById('inputTxt').value.trim()){
+        const s1c=document.getElementById('stt1c');
+        if(s1c){s1c.className='stt-step active';}
+        showToast('🧼 자동 SOAP 변환 시작!');
+        await runAll();
+        if(s1c){s1c.className='stt-step done';}
+      }
     };
     mediaRecorder.start(1000);isRecording=true;recSeconds=0;
     document.getElementById('recBtn').classList.add('recording');
     document.getElementById('recLabel').textContent='탭하여 중지';
     document.getElementById('recTimer').classList.add('show');
+    document.getElementById('autoStopInfo').style.display='none';
     recInterval=setInterval(updateRecTimer,1000);
+    // 자동종료 타이머
+    const autoSec=parseInt(document.getElementById('recAutoStop')?.value||'0');
+    if(autoSec>0){
+      if(autoStopTimeout)clearTimeout(autoStopTimeout);
+      autoStopTimeout=setTimeout(()=>{
+        if(isRecording){
+          showToast('⏱ '+Math.floor(autoSec/60)+'분 자동 종료!');
+          stopRecording();
+        }
+      },autoSec*1000);
+    }
   }catch(err){showToast('⚠️ 마이크 접근 실패 — HTTPS 필요');}
 }
 
 function stopRecording(){
+  if(autoStopTimeout){clearTimeout(autoStopTimeout);autoStopTimeout=null;}
   if(mediaRecorder&&mediaRecorder.state!=='inactive')mediaRecorder.stop();
   isRecording=false;clearInterval(recInterval);
   document.getElementById('recBtn').classList.remove('recording');document.getElementById('recBtn').classList.add('processing');
   document.getElementById('recLabel').textContent='처리 중...';document.getElementById('recTimer').classList.remove('show');
+  document.getElementById('autoStopInfo').style.display='none';
 }
 
 async function handleFileUpload(e){
@@ -1395,4 +1448,14 @@ async function convertToWav(blob){
   v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,16000,true);
   v.setUint32(28,32000,true);v.setUint16(32,2,true);v.setUint16(34,16,true);ws(36,'data');
   v.setUint32(40,samples.length*2,true);
-  for(let i=0;i<samples.length;i++){const s=Math.max(-1,Math.min(1,samples[i]));v.setInt16(44+i*2,s
+  for(let i=0;i<samples.length;i++){const s=Math.max(-1,Math.min(1,samples[i]));v.setInt16(44+i*2,s<0?s*0x8000:s*0x7FFF,true);}
+  ctx.close();return new Blob([wavBuf],{type:'audio/wav'});
+}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='Enter')runAll();});
+
+init();
+</script>
+</body>
+</html>
