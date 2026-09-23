@@ -463,7 +463,6 @@ textarea::placeholder{color:var(--dim)}
 </div>
 
 <button class="btn btn-go" id="goBtn" onclick="runAll()">🧼 SOAP 변환 시작!</button>
-<button class="btn btn-new" id="newPatientBtn2" style="margin-top:8px;width:100%;border-radius:8px;font-size:15px;padding:13px">🆕 새 환자 (입력 · 영상 · 결과 초기화)</button>
 <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
 </div>
 
@@ -863,7 +862,7 @@ function init() {
     if(cur&&[...deptSel.options].some(o=>o.value===cur))deptSel.value=cur;
   }
   setInputPlaceholder();
-  ['newPatientBtn','newPatientBtn2','newPatientFab'].forEach(id=>document.getElementById(id)?.addEventListener('click',newPatient));
+  ['newPatientBtn','newPatientFab'].forEach(id=>document.getElementById(id)?.addEventListener('click',newPatient));
   // 상단 새 환자 버튼이 화면 밖으로 나가면 왼쪽 아래 플로팅 버튼을 띄움
   const fab=document.getElementById('newPatientFab'),anchor=document.getElementById('newPatientBtn');
   if(fab&&anchor&&'IntersectionObserver' in window)new IntersectionObserver(([en])=>fab.classList.toggle('show',!en.isIntersecting)).observe(anchor);
